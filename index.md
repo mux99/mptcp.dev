@@ -2,6 +2,7 @@
 layout: home
 title: Home
 nav_order: 1
+nav_titles: true
 ---
 Multipath TCP (MPTCP) builds on top of TCP to improve connection
 redundancy and performance by sharing a network data stream across
