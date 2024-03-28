@@ -20,9 +20,16 @@
     {%- endif -%}
     <a href="{{ node.url | relative_url }}" class="nav-list-link">{{ node.title }}</a>
     {% unless node.nav_titles == false %}
+    {% assign snippet = 0 %}
     <ul class="nav-list">
       {% for line in node_lines %}
-        {% if line contains '#' %}
+        {% assign line_start = line | slice: 0, 4 %}
+        {% if line_start contains '```' and snippet == 0%}
+          {% assign snippet = 1 %}
+        {% elsif line_start contains '```' and snippet == 1 %}
+          {% assign snippet = 0 %}
+        {% endif %}
+        {% if line contains '#' and snippet == 0%}
           {% assign split_line = line | split: '#' %}
           {% assign depth = split_line.size | minus: 1 %}
           {% assign first = line | split: '#' | first | strip %}
