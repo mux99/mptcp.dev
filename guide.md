@@ -7,17 +7,17 @@ titles_max_depth: 2
 ---
 
 ## The lib c
-Since the Linux kernel v5.6, MPTCP can be used simply by selecting MPTCP in the `socket`{: .color-main} command.
+Since the Linux kernel v5.6, MPTCP can be used simply by selecting MPTCP in the `socket` command.
 
 like this:
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="color-main">socket</span>(<span class="color-blue">AF_INET</span>(6), <span class="color-yellow">SOCK_STREAM</span>, <span class="color-green">IPPROTO_MPTCP</span>)</code></pre></div></div>
 
-`IPPROTO_MPTCP`{: .color-green} is defined as `262`, that is 256 more than the 6 of TCP.
+`IPPROTO_MPTCP`{: .color-green} is defined as `262`{: .text-yellow-300}, that is 256 more than the 6 of TCP.
 
-In case MPTCP is not supported by the kernel or otherwise disabled, multiple `errno` are set:
-- `ENOPROTOOPT`: Protocol not available, linked to `net.mptcp.enabled sysctl`
-- `EPROTONOSUPPORT`: Protocol not supported, MPTCP is not compiled on >= v5.6
-- `EINVAL`: Invalid argument, MPTCP is not available on kernels < 5.6
+In case MPTCP is not supported by the kernel or otherwise disabled, multiple `errno`{: .text-red-200} are set:
+- `ENOPROTOOPT`{: .text-red-200}: Protocol not available, linked to `net.mptcp.enabled sysctl`
+- `EPROTONOSUPPORT`{: .text-red-200}: Protocol not supported, MPTCP is not compiled on >= v5.6
+- `EINVAL`{: .text-red-200}: Invalid argument, MPTCP is not available on kernels < 5.6
 
 ## Are you using MPTCP?
 A similar function to the following can be used. [source](https://github.com/multipath-tcp/mptcp_net-next/issues/294)
