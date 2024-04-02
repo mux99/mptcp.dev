@@ -7,12 +7,12 @@ titles_max_depth: 2
 ---
 
 ## The lib c
-Since the Linux kernel v5.6, MPTCP can be used simply by selecting MPTCP in the `socket` command.
+Since the Linux kernel v5.6, MPTCP can be used simply by selecting MPTCP in the `socket`{: .color-main} command.
 
 like this:
-`socket(AF_INET(6), SOCK_STREAM, IPPROTO_MPTCP)`
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="color-main">socket</span>(<span class="color-blue">AF_INET</span>(6), <span class="color-yellow">SOCK_STREAM</span>, <span class="color-green">IPPROTO_MPTCP</span>)</code></pre></div></div>
 
-`IPPROTO_MPTCP` is defined as `262`, that is 256 more than the 6 of TCP.
+`IPPROTO_MPTCP`{: .color-green} is defined as `262`, that is 256 more than the 6 of TCP.
 
 In case MPTCP is not supported by the kernel or otherwise disabled, multiple `errno`:
 - `ENOPROTOOPT`: Protocol not available, linked to `net.mptcp.enabled sysctl`
@@ -21,8 +21,8 @@ In case MPTCP is not supported by the kernel or otherwise disabled, multiple `er
 
 ## Are you using MPTCP?
 A similar function to the following can be used. [source](https://github.com/multipath-tcp/mptcp_net-next/issues/294)
-```
-socket_is_mptcp(int sockfd)
+``` c
+bool socket_is_mptcp(int sockfd)
 {
 	socklen_t len;
 	bool val;
