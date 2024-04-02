@@ -14,14 +14,16 @@ like this:
 
 `IPPROTO_MPTCP`{: .color-green} is defined as `262`, that is 256 more than the 6 of TCP.
 
-In case MPTCP is not supported by the kernel or otherwise disabled, multiple `errno`:
+In case MPTCP is not supported by the kernel or otherwise disabled, multiple `errno` are set:
 - `ENOPROTOOPT`: Protocol not available, linked to `net.mptcp.enabled sysctl`
 - `EPROTONOSUPPORT`: Protocol not supported, MPTCP is not compiled on >= v5.6
 - `EINVAL`: Invalid argument, MPTCP is not available on kernels < 5.6
 
 ## Are you using MPTCP?
 A similar function to the following can be used. [source](https://github.com/multipath-tcp/mptcp_net-next/issues/294)
-``` c
+<details>
+  <summary>[click to see function]</summary>
+{% highlight c %}
 bool socket_is_mptcp(int sockfd)
 {
 	socklen_t len;
@@ -40,11 +42,12 @@ bool socket_is_mptcp(int sockfd)
 	/* no error: MPTCP is supported */
 	return true;
 }
-```
+{% endhighlight %}
+</details>
 
 ## Quick exemples
 ### MPTCPize
-MPTCP comes with a tool called `mptcpize`
+MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPTCP. It works by overwriting the underlying lib C.
 
 ### C
 ```c
@@ -78,7 +81,9 @@ except:
 ## MPTCP infos & options
 MPTCP like TCP comes with a variety of options and infos that can be acessed with `sockopt`. They are agregated in two structures:
 
-``` c
+<details>
+  <summary>struct mptcp_info</summary>
+{% highlight c %}
 struct mptcp_info {
 	__u8	mptcpi_subflows;
 	__u8	mptcpi_add_addr_signal;
@@ -101,9 +106,12 @@ struct mptcp_info {
 	__u64	mptcpi_bytes_acked;
     __u8    mptcpi_subflows_total;
 };
-```
+{% endhighlight %}
+</details>
 
-``` c
+<details>
+  <summary>struct mptcp_full_info</summary>
+{% highlight c %}
 struct mptcp_full_info {
 	__u32		size_tcpinfo_kernel;	/* must be 0, set by kernel */
 	__u32		size_tcpinfo_user;
@@ -121,7 +129,8 @@ struct mptcp_full_info {
 	__aligned_u64		tcp_info;
 	struct mptcp_info	mptcp_info;
 };
-```
+{% endhighlight %}
+</details>
 
 **note: depending on the version of MPTCP used, some of the above options might not be present**
 the presence or not of an option can be checked in two ways:
