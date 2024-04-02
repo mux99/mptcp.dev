@@ -15,6 +15,8 @@ The Linux MPTCP community develops and maintains the MPTCP v1 stack in
 the Linux kernel (v5.6 or later) and associated userspace tools and
 libraries.
 
+![](/assets/landing_graph.png)
+
 This site is new and still evolving, so please refer to the [Linux MPTCP Upstream Project wiki](https://github.com/multipath-tcp/mptcp_net-next/wiki) for additional information.
 
 _For out-of-tree kernels before v5.6 and an implementation of the experimental [MPTCP v0](https://www.rfc-editor.org/rfc/rfc6824.html) protocol, see https://multipath-tcp.org/_
