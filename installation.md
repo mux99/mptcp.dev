@@ -32,6 +32,8 @@ apps can be forces to use one of the following methods
 ## ss commands
 the `ss` command on linux systems has an option to list MPTCP socket `-M`
 
+[source](https://www.commandlinux.com/man-page/man8/ss.8.html)
+
 
 ## Making use of multiple streams
 For the apps to be able to use multiple streams the kernel needs to be told what interfaces can be used to do so.
