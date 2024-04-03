@@ -137,7 +137,21 @@ struct mptcp_full_info {
 ```
 </details>
 
-**note: depending on the version of MPTCP used, some of the above options might not be present**
+<details markdown="block">
+<summary>code exemple</summary>
+
+```c
+struct mptcp_info info;
+socklen_t info_len = sizeof(struct mptcp_info);
+
+getsockopt(r->con->fd, SOL_MPTCP, MPTCP_INFO, &info, &info_len)
+
+if ((int)offsetof(struct mptcp_info, mptcpi_subflows_total)-(int)info_len < 0){
+    console.log("%b",(uintmax_t)info.mptcpi_subflows_total);
+}
+```
+</details>
+**note: depending on the version of MPTCP used, some options might not be present**
 the presence or not of an option can be checked in two ways:
 - first, if the variable used to store the data is initialized at zero, missing values will be zero.
 - second, the relative position of an entry in the structure can be compared to the `optlen` value using the `offsetof` function.
