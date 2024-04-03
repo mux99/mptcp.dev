@@ -21,9 +21,12 @@ In case MPTCP is not supported by the kernel or otherwise disabled, multiple `er
 
 ## Are you using MPTCP?
 A similar function to the following can be used. [source](https://github.com/multipath-tcp/mptcp_net-next/issues/294)
-<details>
-  <summary>[click to see function]</summary>
-{% highlight c %}
+
+more details in [#installation](installation.html)
+<details markdown="block">
+<summary>[click to see function]</summary>
+
+```c
 bool socket_is_mptcp(int sockfd)
 {
 	socklen_t len;
@@ -42,7 +45,7 @@ bool socket_is_mptcp(int sockfd)
 	/* no error: MPTCP is supported */
 	return true;
 }
-{% endhighlight %}
+```
 </details>
 
 ## Quick exemples
@@ -81,9 +84,10 @@ except:
 ## MPTCP infos & options
 MPTCP like TCP comes with a variety of options and infos that can be acessed with `sockopt`. They are agregated in two structures:
 
-<details>
-  <summary>struct mptcp_info</summary>
-{% highlight c %}
+<details markdown="block">
+<summary>struct mptcp_info</summary>
+
+```c
 struct mptcp_info {
 	__u8	mptcpi_subflows;
 	__u8	mptcpi_add_addr_signal;
@@ -106,12 +110,13 @@ struct mptcp_info {
 	__u64	mptcpi_bytes_acked;
     __u8    mptcpi_subflows_total;
 };
-{% endhighlight %}
+```
 </details>
 
-<details>
-  <summary>struct mptcp_full_info</summary>
-{% highlight c %}
+<details markdown="block">
+<summary>struct mptcp_full_info</summary>
+
+```c
 struct mptcp_full_info {
 	__u32		size_tcpinfo_kernel;	/* must be 0, set by kernel */
 	__u32		size_tcpinfo_user;
@@ -129,7 +134,7 @@ struct mptcp_full_info {
 	__aligned_u64		tcp_info;
 	struct mptcp_info	mptcp_info;
 };
-{% endhighlight %}
+```
 </details>
 
 **note: depending on the version of MPTCP used, some of the above options might not be present**
