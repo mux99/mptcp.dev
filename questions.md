@@ -1,7 +1,7 @@
 ---
 layout: home
 title: Q&A
-nav_order: 4
+nav_order: 6
 nav_titles: true
 titles_max_depth: 2
 ---
