@@ -30,7 +30,14 @@ apps can be forces to use one of the following methods
 - [systemtap](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/getting-started-with-multipath-tcp_configuring-and-managing-networking#preparing-rhel-to-enable-mptcp-support_getting-started-with-multipath-tcp)
 
 ## ss commands
-the `ss` command on linux systems has an option to list MPTCP socket `-M`
+the `ss` command on linux systems has an option to list MPTCP socket `-M`. the recommanded call is `ss -Menita`
+
+- `M`, MPTCP sockets
+- `t`, TCP including subflows created by MPTCP
+- `n`, prevent the port number to protocol vonversion
+- `i`, info on the connection TCP_INFO, MPTCP_INFO, etc.
+- `e`, more info
+- `a`, dysplay all socket not just "established" ones
 
 [source](https://www.commandlinux.com/man-page/man8/ss.8.html)
 
