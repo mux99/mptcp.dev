@@ -57,10 +57,7 @@ bool socket_is_mptcp(int sockfd)
 
 ## Quick exemples
 ### MPTCPize
-MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPTCP. It works by overwriting the underlying lib C. It can be run as follows:
-```bash
-mptcpize run <normal app call>
-```
+MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPTCP. It works by overwriting the underlying lib C. See hot to use it [here](installation.html#force-mptcp)
 
 ### C
 ```c
