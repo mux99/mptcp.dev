@@ -9,4 +9,4 @@ the apps listed bellow support MPTCP natively, other apps can be forced to use i
 | --- | --- | --- | --- |
 | [Lighttpd 1.4](https://www.lighttpd.net/) | [1.4.76](https://github.com/lighttpd/lighttpd1.4/pull/132) | [no](https://redmine.lighttpd.net/projects/lighttpd/wiki/Server_feature-flagsDetails) | `server.feature-flags = ( "server.network-mptcp" => "enable" )` |
 
-Please contact us if you know other apps supporting MPTCP natively. Meaning they are able to use MPTCP without resolving to using techniques like `mptcpize` described [here](installation.html#force-mptcp).
+Please open a new [issue](https://github.com/multipath-tcp/mptcp.dev/issues) or a [pull request](https://github.com/multipath-tcp/mptcp.dev/pulls) if you know other apps supporting MPTCP natively. Meaning they are able to use MPTCP without resolving to using techniques like `mptcpize` described [here](installation.html#force-mptcp).

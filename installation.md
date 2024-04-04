@@ -32,7 +32,8 @@ Apps can be forces to use one of the following methods
 
 ## ss commands
 The `ss` command on linux systems has an option to list MPTCP sockets `-M`. The
-recommended call is `ss -Menita`
+recommended call is `ss -Mani`. To see subflows (if executed as root) `ss -tani`
+can be used, subflows are marked as `tcp-ulp-mptcp`.
 
 - `M`, MPTCP sockets
 - `t`, TCP including subflows created by MPTCP
