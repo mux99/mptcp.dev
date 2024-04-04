@@ -18,7 +18,7 @@ is created, this *subflow* consist of a regular TCP connection that is used to t
 data trough one interface. Additional *subflows* can be negotiated later between
 the hosts. For the distant host to be able to detect the use of MPTCP, a new field
 is added to the *option* field of the underlying TCP *subflow*. This field contains,
-amongst other things, `MP_CAPABLE` that tells the other host to use MPTCP (it it's
+amongst other things, `MP_CAPABLE` that tells the other host to use MPTCP (if it's
 socket support's it). If the distant host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox)
 in between does not support it, the response `SYN+ACK` packet will not contain the
 MPTCP options in the *option* field. In that case, the connection will be 'downgraded'
@@ -26,7 +26,7 @@ to plain TCP and will continue without additional *subflows*.
 
 This behavior is made possible by two internal components:
 * **path manager**, it is responsible for the managing of *subflows* from creation to deletion.
-* **packet scheduler**, it is task with choosing which available *subflow* to send
+* **packet scheduler**, it is tasked with choosing which available *subflow* to send
 packets to. The packet scheduler is also responsible for the load balancing of the
 packets across the *subflows* making use of the available bandwidth.
 
