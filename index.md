@@ -6,20 +6,22 @@ nav_titles: true
 titles_max_depth: 2
 ---
 
-Multipath TCP (MPTCP) builds on top of TCP to improve connection
-redundancy and performance by sharing a network data stream across
-multiple underlying TCP sessions. The MPTCP v1 protocol is defined
-in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html).
+Multipath TCP or [MPTCP](https://en.wikipedia.org/wiki/Multipath_TCP) is an extention of [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol) described in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows a device to make use of multiple intefaces at once to send and receive TCP packets over a single connection. MPTCP can agregate the bandwith of multiple interfaces, it also allows a fail-over if one iterface is down the trafic is seamlessly transfered to the others.
 
-The Linux MPTCP community develops and maintains the MPTCP v1 stack in
-the Linux kernel (v5.6 or later) and associated userspace tools and
-libraries.
+Here is how it works! When a new socket is created with `IPPROTO_MPTCP` a *subflow* is created, this *subflow* consist of a regular TCP connection that is used to transmit data trough one interface. Additionnal *subflows* can be negociated later between the hosts.
+For the distant host to be able to detect the use of MPTCP, a new field is added to the *option* field of the underlying TCP *subflow*. This field contains ,amongst other things, `MP_CAPABLE` that tells the other host to use MPTCP (it it's socket support's it). If the distant host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox) in between does not support it, the response `SYN+ACK` packet will not contain the MPTCP options in the *option* field. In that case, the connection will be 'downgraded' to plain TCP and will continue without additional *subflows*.
 
-![](/assets/landing_graph.png)
+This behaviour is made possible by two internal components:
+* **path manager**, it is responsible for the managing of *subflows* from creation to deletion.
+* **packet scheduler**, it is task with choosing wich avaliable *subflow* to send packets to. The packet scheduler is also responsible for the load balancing of the packets across the *subflows* making use of the avaliable bandwith.
 
-This site is new and still evolving, so please refer to the [Linux MPTCP Upstream Project wiki](https://github.com/multipath-tcp/mptcp_net-next/wiki) for additional information.
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/DifferenceTCP_MPTCP-en.png/1024px-DifferenceTCP_MPTCP-en.png" alt="Diagram demonstrationg the difference between MPTCP and TCP" width="50%" style="margin-left: 25%;">
 
-_For out-of-tree kernels before v5.6 and an implementation of the experimental [MPTCP v0](https://www.rfc-editor.org/rfc/rfc6824.html) protocol, see https://multipath-tcp.org/_
+<details markdown="block">
+<summary>Exemple of MPTCP session</summary>
+
+![Exemple of MPTCP session](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/MPTCP-session-en.png/1920px-MPTCP-session-en.png)
+</details>
 
 ## Features
 
@@ -61,3 +63,7 @@ for more details.
 * [Patchwork](https://patchwork.kernel.org/project/mptcp/)
 * [Continuous Integration](https://github.com/multipath-tcp/mptcp_net-next/wiki/CI)
 * [Testing](https://github.com/multipath-tcp/mptcp_net-next/wiki/Testing)
+
+<!-- This site is new and still evolving, so please refer to the [Linux MPTCP Upstream Project wiki](https://github.com/multipath-tcp/mptcp_net-next/wiki) for additional information.
+
+_For out-of-tree kernels before v5.6 and an implementation of the experimental [MPTCP v0](https://www.rfc-editor.org/rfc/rfc6824.html) protocol, see https://multipath-tcp.org/_ -->
