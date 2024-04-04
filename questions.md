@@ -12,13 +12,13 @@ MPTCP aims to maintain the same level of security as traditional TCP, with speci
 Privacy implications, such as the potential for path correlation by servers, are important considerations.
 
 ## Why & when should it be enable by default?
-Here, servers and clients must be considerd separately:
+Here, servers and clients must be considered separately:
 - client, the client is the main beneficiary of MPTCP, but it is only worth it to enable if the user as configured their systems to make use of its multi-path capability.
 
-- servers, on servers it should be enabled by default to allow it's users to choose whether or to to use MPTCP. Being bakward compatible, an MPTCP socket is able to comunicate with a TCP socket and will devolve itself to TCP.
+- servers, on servers it should be enabled by default to allow it's users to choose whether or to to use MPTCP. Being backward compatible, an MPTCP socket is able to communicate with a TCP socket and will devolve itself to TCP.
 
-## Are there unsuported TCP options?
-MPTCP support most TCP extenions but not yet all of them (the most obscure ones).
+## Are there unsupported TCP options?
+MPTCP support most TCP extensions but not yet all of them (the most obscure ones).
 It is also documented that it is not yet compatible with KTLS.
 
 ## Are there any performance impact to the use of MPTCP?

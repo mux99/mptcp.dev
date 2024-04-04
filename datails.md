@@ -1,6 +1,6 @@
 ---
 layout: home
-title: Inner workigns
+title: Implementation details
 nav_order: 5
 nav_titles: true
 titles_max_depth: 2

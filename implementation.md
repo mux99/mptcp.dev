@@ -55,7 +55,7 @@ bool socket_is_mptcp(int sockfd)
 ```
 </details>
 
-## Quick exemples
+## Quick examples
 ### MPTCPize
 MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPTCP. It works by overwriting the underlying lib C. See hot to use it [here](installation.html#force-mptcp)
 
@@ -87,7 +87,7 @@ except:
 ```
 
 ## MPTCP infos & options
-MPTCP like TCP comes with a variety of options and infos that can be acessed with `sockopt`. They are agregated in two structures:
+MPTCP like TCP comes with a variety of options and infos that can be accessed with `sockopt`. They are aggregated in two structures:
 
 <details markdown="block">
 <summary>struct mptcp_info</summary>
@@ -113,7 +113,7 @@ struct mptcp_info {
 	__u64	mptcpi_bytes_sent;
 	__u64	mptcpi_bytes_received;
 	__u64	mptcpi_bytes_acked;
-    __u8    mptcpi_subflows_total;
+	__u8	mptcpi_subflows_total;
 };
 ```
 </details>
@@ -142,6 +142,11 @@ struct mptcp_full_info {
 ```
 </details>
 
+**note: depending on the version of MPTCP used, some options might not be present**
+the presence or not of an option can be checked in two ways:
+- first, if the variable used to store the data is initialized at zero, missing values will be zero.
+- second, the relative position of an entry in the structure can be compared to the `optlen` value using the `offsetof` function.
+
 <details markdown="block">
 <summary>code exemple</summary>
 
@@ -156,17 +161,14 @@ if ((int)offsetof(struct mptcp_info, mptcpi_subflows_total)-(int)info_len < 0){
 }
 ```
 </details>
-**note: depending on the version of MPTCP used, some options might not be present**
-the presence or not of an option can be checked in two ways:
-- first, if the variable used to store the data is initialized at zero, missing values will be zero.
-- second, the relative position of an entry in the structure can be compared to the `optlen` value using the `offsetof` function.
 
 <!-- ### The infos in more details
-- **the number of subflows**, is avaliable in multiple of the fields
+- **the number of subflows**, is available in multiple of the fields
 	- `mptcpi_subflows`:
-	- `mptcpi_subflows_max`: correspond to the number of subflows in exess of the initial one.  
-	*note: it does not always correspond the the true number -1, if the inital flow was lost*
+	- `mptcpi_subflows_max`: correspond to the number of subflows in excess of the initial one.  
+	*note: it does not always correspond the the true number -1, if the initial flow was lost*
 	- `mptcpi_subflows_total`:
 	- `num_subflows`:
 
-- **==TODO==** -->
+- **==TODO==** I don't have enough of an understanding at this time to assert what are the useful options and describe them. it would be best for someone else to write this part
+note: it should be quite concise-->

@@ -5,44 +5,44 @@ nav_order: 2
 nav_titles: true
 titles_max_depth: 2
 ---
-## Enabeling on linux systems
+## Enabling on linux systems
 run the following command:
 ```bash
 sysctl net.mptcp.enabled=1
 ```
 
 ## Force MPTCP
-apps can be forces to use one of the following methods
+Apps can be forces to use one of the following methods
 
 - [mptcpize](https://www.mankier.com/8/mptcpize)
 
     `mptcpize run <app command>`  
-    this works by modifying the behaviour of the underlaying lib-c  
-    *note: this does does not always work and should not be used for production*
+    This works by modifying the behavior of the underlying lib-c  
+    *note: some admins do not like this technique, that is why it is recommended to update apps to support MPTCP nativelly*
 
 - [GODEBUG](https://go-review.googlesource.com/c/go/+/507375)
 
-    whith GO, the lib-c is not used, so `mptcpize` will not work.
-    to force MPTCP the environment variable `GODEBUG=multipathtcp=1` can be used.
+    With GO, the lib-c is not used, so `mptcpize` will not work.
+    To force MPTCP the environment variable `GODEBUG=multipathtcp=1` can be used.
 
 - [eBPF](https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=ddba122428a7)
 
 - [systemtap](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/getting-started-with-multipath-tcp_configuring-and-managing-networking#preparing-rhel-to-enable-mptcp-support_getting-started-with-multipath-tcp)
 
 ## ss commands
-the `ss` command on linux systems has an option to list MPTCP socket `-M`. the recommanded call is `ss -Menita`
+The `ss` command on linux systems has an option to list MPTCP sockets `-M`. The recommended call is `ss -Menita`
 
 - `M`, MPTCP sockets
 - `t`, TCP including subflows created by MPTCP
-- `n`, prevent the port number to protocol vonversion
+- `n`, prevent the port number to protocol conversion
 - `i`, info on the connection TCP_INFO, MPTCP_INFO, etc.
 - `e`, more info
-- `a`, dysplay all socket not just "established" ones
+- `a`, display all socket not just "established" ones
 
 [man page](https://www.commandlinux.com/man-page/man8/ss.8.html)
 
 
-## Making use of multiple streams
+## Making use of multiple subflows
 For the apps to be able to use multiple streams the kernel needs to be told what interfaces can be used to do so.
 
 <details markdown="block">
@@ -108,37 +108,4 @@ mptcp-kernel:~# ip route show table 2
 10.1.2.0/24 dev eth1  scope link
 default via 10.1.2.1 dev eth1
 ```
-</details>
-
-<details markdown="block">
-<summary>Automatic Configuration</summary>
-
-Doing the above each time by hand is very cumbersome. Some alternative automatic solutions are available:
-
-### Using the configuration scripts (Ubuntu/Debian-based systems)
-
-In /etc/network/if-up.d/ you can place scripts that will be executed each time a new interface comes up. We created two scripts:
-
-```bash
-* mptcp_up - Place it inside /etc/network/if-up.d/ and make it executable.
-* mptcp_down - Place it inside /etc/network/if-post-down.d/ and make it executable.
-```
-
-These scripts work most of the time. They use environment variables to configure the routing tables. If they do not work for you, please contact us on the [mptcp-dev](https://listes-2.sipr.ucl.ac.be/sympa/info/mptcp-dev) Mailing-List.
-
-### Automatic configuration with "Multihomed-Routing"
-
-Kristian Evensen <kristian.evensen@gmail.com> developed a set of scripts that integrate well with existing Network Managers to properly configure the multihomed routing. Check it out at [https://github.com/kristrev/multihomed-routing].
-
-### Automatic configuration with ConnMan
-
-Dragos Tatulea <dragos@endocode.com> and Dongsu Park <dongsu@endocode> integrated support for Multipath TCP into ConnMan. Checkout his [github repository](https://github.com/endocode/connman) for access to the source-code
-
-### Another way for Gentoo-based systems
-
-Ondřej Caletka <Ondrej.Caletka@cesnet.cz> created a script for his Gentoo-based system. You can use his script from [github](https://gist.github.com/oskar456/7264828). For any questions, please contact him directly.
-
-### DEPRECATED - Automatic configuration with MULTI
-
-Kristian Evensen <kristrev@simula.no> created a daemon which automatically configures the correct routing tables. You can install his tool from [github](https://github.com/kristrev/multi).
 </details>
