@@ -156,18 +156,23 @@ values will be zero.
 the `optlen` value using the `offsetof` function.
 
 <details markdown="block">
-<summary>code exemple</summary>
+<summary>code example</summary>
 
 ```c
 #include <stdio.h>
 
 struct mptcp_info info;
 socklen_t info_len = sizeof(struct mptcp_info);
+int fd; //initialize with the file descriptor
 
-getsockopt(r->con->fd, SOL_MPTCP, MPTCP_INFO, &info, &info_len)
+if (-1 == getsockopt(fd, SOL_MPTCP, MPTCP_INFO, &info, &info_len)) {
+	//handle the error here
+}
 
-//info_len has the number of bytes written so by subtracting it to the byte position of the
-if ((int)offsetof(struct mptcp_info, mptcpi_subflows_total) - (int)info_len < 0){
+//info_len has the number of bytes written, so by subtracting it to the byte position
+//of the field we want and comparing to zero can can be sure that the value
+//has been written to.
+else if ((int)offsetof(struct mptcp_info, mptcpi_subflows_total) - (int)info_len < 0){
     printf("%u", info.mptcpi_subflows_total);
 }
 ```
