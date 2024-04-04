@@ -5,7 +5,7 @@ nav_order: 3
 nav_titles: true
 titles_max_depth: 2
 ---
-## nstat
+<!-- ## nstat
 https://linux.die.net/man/8/nstat
 
 ==TODO==
@@ -13,4 +13,4 @@ https://linux.die.net/man/8/nstat
 ## tcpdump
 https://www.tcpdump.org/
 
-==TODO==
+==TODO== -->

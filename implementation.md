@@ -156,7 +156,7 @@ the presence or not of an option can be checked in two ways:
 - first, if the variable used to store the data is initialized at zero, missing values will be zero.
 - second, the relative position of an entry in the structure can be compared to the `optlen` value using the `offsetof` function.
 
-### The infos in more details
+<!-- ### The infos in more details
 - **the number of subflows**, is avaliable in multiple of the fields
 	- `mptcpi_subflows`:
 	- `mptcpi_subflows_max`: correspond to the number of subflows in exess of the initial one.  
@@ -164,4 +164,4 @@ the presence or not of an option can be checked in two ways:
 	- `mptcpi_subflows_total`:
 	- `num_subflows`:
 
-- **==TODO==**
+- **==TODO==** -->
