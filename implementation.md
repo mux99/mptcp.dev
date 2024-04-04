@@ -19,6 +19,13 @@ In case MPTCP is not supported by the kernel or otherwise disabled, multiple `er
 - `EPROTONOSUPPORT`{: .text-red-200}: Protocol not supported, MPTCP is not compiled on >= v5.6
 - `EINVAL`{: .text-red-200}: Invalid argument, MPTCP is not available on kernels < 5.6
 
+*note: since a program is not always compiled on the system it run's on; it is recommended to manually define* `IPPROTO_MPTCP` *as follows*
+```c
+#ifndef IPPROTO_MPTCP
+#define IPPROTO_MPTCP 262
+#endif
+```
+
 ## Are you using MPTCP?
 A similar function to the following can be used. [source](https://github.com/multipath-tcp/mptcp_net-next/issues/294)
 
@@ -50,7 +57,10 @@ bool socket_is_mptcp(int sockfd)
 
 ## Quick exemples
 ### MPTCPize
-MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPTCP. It works by overwriting the underlying lib C.
+MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPTCP. It works by overwriting the underlying lib C. It can be run as follows:
+```bash
+mptcpize run <normal app call>
+```
 
 ### C
 ```c
@@ -61,10 +71,8 @@ MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPT
 #endif
 
 int s;
-
-if (-1 == (s = socket(AF_INET, SOCK_STREAM, IPPROTO_MPTCP))) {
-    s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
-}
+s = socket(AF_INET, SOCK_STREAM, IPPROTO_MPTCP)
+if (s == -1) s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 ```
 
 ### Python

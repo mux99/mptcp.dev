@@ -39,7 +39,7 @@ the `ss` command on linux systems has an option to list MPTCP socket `-M`. the r
 - `e`, more info
 - `a`, dysplay all socket not just "established" ones
 
-[source](https://www.commandlinux.com/man-page/man8/ss.8.html)
+[man page](https://www.commandlinux.com/man-page/man8/ss.8.html)
 
 
 ## Making use of multiple streams
