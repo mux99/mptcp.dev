@@ -10,7 +10,11 @@ titles_max_depth: 2
 Since the Linux kernel v5.6, MPTCP can be used simply by selecting MPTCP in the `socket` command.
 
 like this:
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="color-main">socket</span>(<span class="color-blue">AF_INET</span>(6), <span class="color-yellow">SOCK_STREAM</span>, <span class="color-green">IPPROTO_MPTCP</span>)</code></pre></div></div>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight">
+<code>
+	<span class="color-main">socket</span>(<span class="color-blue">AF_INET</span>(6), <span class="color-yellow">SOCK_STREAM</span>, <span class="color-green">IPPROTO_MPTCP</span>)
+</code>
+</pre></div></div>
 
 `IPPROTO_MPTCP`{: .color-green} is defined as `262`{: .text-yellow-300}, that is 256 more than the 6 of TCP.
 
@@ -19,7 +23,9 @@ In case MPTCP is not supported by the kernel or otherwise disabled, multiple `er
 - `EPROTONOSUPPORT`{: .text-red-200}: Protocol not supported, MPTCP is not compiled on >= v5.6
 - `EINVAL`{: .text-red-200}: Invalid argument, MPTCP is not available on kernels < 5.6
 
-*note: since a program is not always compiled on the system it run's on; it is recommended to manually define* `IPPROTO_MPTCP` *as follows*
+*note: Since a program is not always compiled on the system it run's on.*
+*It is recommended to manually define* `IPPROTO_MPTCP` *as follows*
+
 ```c
 #ifndef IPPROTO_MPTCP
 #define IPPROTO_MPTCP 262
@@ -57,7 +63,8 @@ bool socket_is_mptcp(int sockfd)
 
 ## Quick examples
 ### MPTCPize
-MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPTCP. It works by overwriting the underlying lib C. See hot to use it [here](installation.html#force-mptcp)
+MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPTCP.
+It works by overwriting the underlying lib C. See hot to use it [here](installation.html#force-mptcp)
 
 ### C
 ```c
@@ -87,7 +94,8 @@ except:
 ```
 
 ## MPTCP infos & options
-MPTCP like TCP comes with a variety of options and infos that can be accessed with `sockopt`. They are aggregated in two structures:
+MPTCP like TCP comes with a variety of options and infos that can be accessed
+with `sockopt`. They are aggregated in two structures:
 
 <details markdown="block">
 <summary>struct mptcp_info</summary>
@@ -144,20 +152,25 @@ struct mptcp_full_info {
 
 **note: depending on the version of MPTCP used, some options might not be present**
 the presence or not of an option can be checked in two ways:
-- first, if the variable used to store the data is initialized at zero, missing values will be zero.
-- second, the relative position of an entry in the structure can be compared to the `optlen` value using the `offsetof` function.
+- first, if the variable used to store the data is initialized at zero, missing
+values will be zero.
+- second, the relative position of an entry in the structure can be compared to
+the `optlen` value using the `offsetof` function.
 
 <details markdown="block">
 <summary>code exemple</summary>
 
 ```c
+#include <stdio.h>
+
 struct mptcp_info info;
 socklen_t info_len = sizeof(struct mptcp_info);
 
 getsockopt(r->con->fd, SOL_MPTCP, MPTCP_INFO, &info, &info_len)
 
-if ((int)offsetof(struct mptcp_info, mptcpi_subflows_total)-(int)info_len < 0){
-    console.log("%b",(uintmax_t)info.mptcpi_subflows_total);
+//info_len has the number of bytes written so by subtracting it to the byte position of the
+if ((int)offsetof(struct mptcp_info, mptcpi_subflows_total) - (int)info_len < 0){
+    printf("%u", info.mptcpi_subflows_total);
 }
 ```
 </details>

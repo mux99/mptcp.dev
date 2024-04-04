@@ -6,14 +6,29 @@ nav_titles: true
 titles_max_depth: 2
 ---
 
-Multipath TCP or [MPTCP](https://en.wikipedia.org/wiki/Multipath_TCP) is an extension of [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol) described in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows a device to make use of multiple interfaces at once to send and receive TCP packets over a single connection. MPTCP can aggregate the bandwidth of multiple interfaces, it also allows a fail-over if one interface is down the traffic is seamlessly transferred to the others.
+Multipath TCP or [MPTCP](https://en.wikipedia.org/wiki/Multipath_TCP) is an extension
+of [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol) described
+in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows a device to
+make use of multiple interfaces at once to send and receive TCP packets over a single
+connection. MPTCP can aggregate the bandwidth of multiple interfaces, it also allows
+a fail-over if one interface is down the traffic is seamlessly transferred to the others.
 
-Here is how it works! When a new socket is created with `IPPROTO_MPTCP` a *subflow* is created, this *subflow* consist of a regular TCP connection that is used to transmit data trough one interface. Additional *subflows* can be negotiated later between the hosts.
-For the distant host to be able to detect the use of MPTCP, a new field is added to the *option* field of the underlying TCP *subflow*. This field contains ,amongst other things, `MP_CAPABLE` that tells the other host to use MPTCP (it it's socket support's it). If the distant host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox) in between does not support it, the response `SYN+ACK` packet will not contain the MPTCP options in the *option* field. In that case, the connection will be 'downgraded' to plain TCP and will continue without additional *subflows*.
+Here is how it works! When a new socket is created with `IPPROTO_MPTCP` a *subflow*
+is created, this *subflow* consist of a regular TCP connection that is used to transmit
+data trough one interface. Additional *subflows* can be negotiated later between
+the hosts. For the distant host to be able to detect the use of MPTCP, a new field
+is added to the *option* field of the underlying TCP *subflow*. This field contains,
+amongst other things, `MP_CAPABLE` that tells the other host to use MPTCP (it it's
+socket support's it). If the distant host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox)
+in between does not support it, the response `SYN+ACK` packet will not contain the
+MPTCP options in the *option* field. In that case, the connection will be 'downgraded'
+to plain TCP and will continue without additional *subflows*.
 
 This behavior is made possible by two internal components:
 * **path manager**, it is responsible for the managing of *subflows* from creation to deletion.
-* **packet scheduler**, it is task with choosing which available *subflow* to send packets to. The packet scheduler is also responsible for the load balancing of the packets across the *subflows* making use of the available bandwidth.
+* **packet scheduler**, it is task with choosing which available *subflow* to send
+packets to. The packet scheduler is also responsible for the load balancing of the
+packets across the *subflows* making use of the available bandwidth.
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/DifferenceTCP_MPTCP-en.png/1024px-DifferenceTCP_MPTCP-en.png" alt="Diagram demonstrating the difference between MPTCP and TCP" width="50%" style="margin-left: 25%;">
 
