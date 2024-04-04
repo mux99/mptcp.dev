@@ -11,9 +11,7 @@ Since the Linux kernel v5.6, MPTCP can be used simply by selecting MPTCP in the 
 
 like this:
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight">
-<code>
-	<span class="color-main">socket</span>(<span class="color-blue">AF_INET</span>(6), <span class="color-yellow">SOCK_STREAM</span>, <span class="color-green">IPPROTO_MPTCP</span>)
-</code>
+<code><span class="color-main">socket</span>(<span class="color-blue">AF_INET</span>(6), <span class="color-yellow">SOCK_STREAM</span>, <span class="color-green">IPPROTO_MPTCP</span>)</code>
 </pre></div></div>
 
 `IPPROTO_MPTCP`{: .color-green} is defined as `262`{: .text-yellow-300}, that is 256 more than the 6 of TCP.
