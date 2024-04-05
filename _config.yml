@@ -20,12 +20,13 @@
 
 title: Multipath TCP <br />for Linux
 #email: your-email@example.com
-description: >-
-#Discover the Multipath TCP (MPTCP) technology for Linux, an extension of TCP that
-#enhances connection redundancy and performance by utilizing multiple underlying
-#TCP sessions simultaneously. This site provides installation guides, debugging tools,
-#FAQs, and a list of supported applications, aimed at facilitating the adoption and
-#implementation of MPTCP for Linux developers and users.
+description: >- # this means to ignore newlines until "baseurl:"
+  Discover the Multipath TCP (MPTCP) technology for Linux, an extension of TCP that
+  enhances connection redundancy and performance by utilizing multiple underlying
+  TCP sessions simultaneously. This site provides installation guides, debugging tools,
+  FAQs, and a list of supported applications, aimed at facilitating the adoption and
+  implementation of MPTCP for Linux developers and users.
+
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://mux99.github.io/mptcp.dev/" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
