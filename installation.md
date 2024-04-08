@@ -45,6 +45,48 @@ can be used, subflows are marked as `tcp-ulp-mptcp`.
 [man page](https://www.commandlinux.com/man-page/man8/ss.8.html)
 
 
+## Making Use of Multiple Streams
+
+To enable applications to leverage multiple streams, it's essential to inform the kernel about which network interfaces are available for this purpose. This process involves two main steps: setting up MPTCP endpoints and configuring the routing. Both steps are crucial for the optimal functioning of MPTCP.
+
+### Setting MPTCP Endpoints
+
+#### Why?
+
+MPTCP works by distributing TCP connections across multiple paths, which necessitates the establishment of multiple endpoints. Specifying MPTCP endpoints allows the system to understand which IP addresses can be used to initiate these multiple paths. It's a foundational step to ensure that the MPTCP protocol can efficiently manage traffic across different network interfaces.
+
+#### How?
+
+To set MPTCP endpoints, you use the `ip mptcp` command. Here's a basic example:
+
+```bash
+ip mptcp endpoint add 192.168.1.1 signal
+ip mptcp endpoint add 192.168.2.1 subflow
+```
+
+### Configuring Routing
+#### Why?
+After setting up the endpoints, it's necessary to configure the routing. This step ensures that the data packets know which path to take when leaving the system. Without proper routing, even if multiple paths are available, the system might not utilize them effectively, leading to suboptimal performance.
+
+#### How?
+Routing involves using ip route and ip rule commands to direct traffic based on the source IP addresses or other criteria. Here’s a simplified example:
+
+```bash
+# Add IP routes for each interface
+ip route add default via 192.168.1.1 dev eth0 table 100
+ip route add default via 192.168.2.1 dev eth1 table 200
+
+# Set rules to select route table based on source IP
+ip rule add from 192.168.1.0/24 table 100
+ip rule add from 192.168.2.0/24 table 200
+```
+
+These commands configure the system to use different routes for traffic originating from different source IP addresses, allowing MPTCP to efficiently manage multiple paths.
+
+By carefully setting MPTCP endpoints and configuring routing, you can fully exploit the advantages of MPTCP, enhancing the resilience and performance of network connections.
+
+
+<!--
 ## Making use of multiple subflows
 For the apps to be able to use multiple streams the kernel needs to be told what
 interfaces can be used to do so.
@@ -122,3 +164,4 @@ mptcp-kernel:~# ip route show table 2
 default via 10.1.2.1 dev eth1
 ```
 </details>
+-->
