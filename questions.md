@@ -35,9 +35,18 @@ becomes advantageous when leveraging multiple network paths, potentially increas
 throughput and reliability.
 
 ## What are the supported operating systems?
-Originally seen as predominantly supported by Linux (from kernel version 5.6), the
-adoption of MPTCP extends beyond to various platforms including iOS. It is important
-to note that iOS implements its own version of MPTCP.
+<details markdown="block">
+<summary> Originally seen as predominantly supported by Linux (from kernel version 5.6),
+the adoption of MPTCP extends beyond to various platforms including iOS. But... </summary>
+
+MPTCP on IOS has strings attached:
+- It is easy only if you use their SDK: [doc](https://developer.apple.com/documentation/foundation/nsurlsessionconfiguration/improving_network_reliability_using_multipath_tcp)
+- If not, you need to use private libraries (we are not even sure the headers are available) with specific functions to create sockets that are apparently not documented, e.g., [OpenSSH for IOS](https://github.com/apple-oss-distributions/OpenSSH/blob/main/openssh/sshconnect.c#L487)
+
+On FreeBSD, there was an ongoing implementation, but that was years ago, and not working today according to [this](http://www-cs-students.stanford.edu/~sjac/freebsd_mptcp_info.html)
+
+There are other implementations, but on specific systems (Citrix load balancer, userspace, etc.): more details[here](http://blog.multipath-tcp.org/blog/html/2018/12/15/apple_and_multipath_tcp.html)
+</details>
 
 ## MPTCP vs. QUIC
 MPTCP enhances TCP's functionality at the transport layer by enabling multipath
