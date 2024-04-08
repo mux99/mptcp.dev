@@ -35,7 +35,7 @@ packets across the *subflows* making use of the available bandwidth.
 <details markdown="block">
 <summary>Example of MPTCP session</summary>
 
-![Example of MPTCP session](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/MPTCP-session-en.png/1920px-MPTCP-session-en.png){: .bg-grey-lt-000 .radius-25px}
+![Example of MPTCP session](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/MPTCP-session-en.png/1920px-MPTCP-session-en.png){: .bg-grey-lt-000 .rounded}
 </details>
 
 ## Features
