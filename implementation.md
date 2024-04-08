@@ -186,6 +186,12 @@ struct mptcp_full_info {
 ```
 </details>
 
+The options supported by mptcp are:
+- `MPTCP_INFO`, defined as `1`, is used to interact with `struct mptcp_info` *example 1*
+- `MPTCP_TCPINFO`, defined as `2`, is used to interact with `struct mptcp_info`
+- `MPTCP_SUBFLOW_ADDRS`, defined as `3`, is used to interact with `struct mptcp_info`
+- `MPTCP_FULL_INFO`, defined as `4`, is used to interact with `struct mptcp_full_info` *example 2*
+
 **note: depending on the version of MPTCP used, some options might not be present**
 the presence or not of an option can be checked in two ways:
 - first, if the variable used to store the data is initialized at zero, missing
@@ -251,20 +257,22 @@ else{
 		printf("\trtt: %u\n", tcp_info[i].tcpi_rtt);
 	}
 
-	if ((int)offsetof(struct mptcp_full_info, mptcp_info) + (int)offsetof(struct mptcp_info, mptcpi_subflows_total)){
-    	printf("subflow count: %u\n", full_info.mptcp_info.mptcpi_subflows_total);
-	}
+    printf("subflow count: %u\n", full_info.mptcp_info.mptcpi_subflows_total);
 }
 ```
 </details>
 
 <!-- ### The infos in more details
 - **the number of subflows**, is available in multiple of the fields
-	- `mptcpi_subflows`:
-	- `mptcpi_subflows_max`: correspond to the number of subflows in excess of the initial one.  
-	*note: it does not always correspond the the true number -1, if the initial flow was lost*
-	- `mptcpi_subflows_total`:
-	- `num_subflows`:
+
+	| field name | structure | description |
+	| --- | --- | --- |
+	| `mptcpi_subflows` | `MPTCP_INFO` | the number of subflows created after the first one |
+	| `mptcpi_subflows_total` | `MPTCP_INFO` | the current number of subflows |
+	| `num_subflows` | `MPTCP_FULL_INFO` | the current number of subflows |
+
+	*note: in `mptcpi_subflows` correspond to the number of subflows -1 as long as the initial*
+	*subflow is still active*
 
 - **==TODO==** I don't have enough of an understanding at this time to assert what are the useful options and describe them. it would be best for someone else to write this part
-note: it should be quite concise-->
+note: it should be quite concise and follow the structure set above -->
