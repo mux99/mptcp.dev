@@ -186,6 +186,8 @@ struct mptcp_full_info {
 ```
 </details>
 
+[source](https://github.com/multipath-tcp/mptcp_net-next/blob/export/include/uapi/linux/mptcp.h)
+
 The options supported by mptcp are:
 - `MPTCP_INFO`, defined as `1`, is used to interact with `struct mptcp_info` *example 1*
 - `MPTCP_TCPINFO`, defined as `2`, is used to interact with `struct mptcp_info`
