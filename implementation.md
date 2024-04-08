@@ -93,12 +93,14 @@ except:
 
 ## MPTCP infos & options
 MPTCP like TCP comes with a variety of options and infos that can be accessed
-with `sockopt`. They are aggregated in two structures:
+with `sockopt`. They are aggregated in three structures:
 
 <details markdown="block">
 <summary>struct mptcp_info</summary>
 
 ```c
+//in the structure, they are grouped by wave of addition, meaning you can get away with only
+//verifying the offset of the last element in each group.  
 struct mptcp_info {
 	__u8	mptcpi_subflows;
 	__u8	mptcpi_add_addr_signal;
@@ -111,15 +113,51 @@ struct mptcp_info {
 	__u64	mptcpi_write_seq;
 	__u64	mptcpi_snd_una;
 	__u64	mptcpi_rcv_nxt;
+
 	__u8	mptcpi_local_addr_used;
 	__u8	mptcpi_local_addr_max;
+
 	__u8	mptcpi_csum_enabled;
+
 	__u32	mptcpi_retransmits;
 	__u64	mptcpi_bytes_retrans;
 	__u64	mptcpi_bytes_sent;
 	__u64	mptcpi_bytes_received;
 	__u64	mptcpi_bytes_acked;
+
 	__u8	mptcpi_subflows_total;
+
+	__u8	reserved[3];
+	__u32	mptcpi_last_data_sent;
+	__u32	mptcpi_last_data_recv;
+	__u32	mptcpi_last_ack_recv;
+};
+```
+</details>
+
+<details markdown="block">
+<summary>struct mptcp_subflow_info</summary>
+
+```c
+struct mptcp_subflow_addrs {
+	union {
+		__kernel_sa_family_t sa_family;
+		struct sockaddr sa_local;
+		struct sockaddr_in sin_local;
+		struct sockaddr_in6 sin6_local;
+		struct __kernel_sockaddr_storage ss_local;
+	};
+	union {
+		struct sockaddr sa_remote;
+		struct sockaddr_in sin_remote;
+		struct sockaddr_in6 sin6_remote;
+		struct __kernel_sockaddr_storage ss_remote;
+	};
+};
+
+struct mptcp_subflow_info {
+	__u32				id;
+	struct mptcp_subflow_addrs	addrs;
 };
 ```
 </details>
@@ -156,14 +194,14 @@ values will be zero.
 the `optlen` value using the `offsetof` function.
 
 <details markdown="block">
-<summary>code example</summary>
+<summary>code example 1</summary>
 
 ```c
 #include <stdio.h>
 
-struct mptcp_info info;
+struct mptcp_info info = {0};
 socklen_t info_len = sizeof(struct mptcp_info);
-int fd; //initialize with the file descriptor
+int fd = 0; //initialize with the file descriptor of an existing socket
 
 if (-1 == getsockopt(fd, SOL_MPTCP, MPTCP_INFO, &info, &info_len)) {
 	//handle the error here
@@ -174,6 +212,48 @@ if (-1 == getsockopt(fd, SOL_MPTCP, MPTCP_INFO, &info, &info_len)) {
 //has been written to.
 else if ((int)offsetof(struct mptcp_info, mptcpi_subflows_total) - (int)info_len < 0){
     printf("%u", info.mptcpi_subflows_total);
+}
+```
+</details>
+
+<details markdown="block">
+<summary>code example 2</summary>
+
+```c
+#include <stdio.h>
+
+struct mptcp_full_info full_info = {0};
+
+//in this example we only look for two subflows, choose an appropriate value for your needs
+//so as to not hardcode the value, a prior call to `getsockopt` with `MPTCP_INFO` can
+//give the number of subflows currently open with the `mptcpi_subflows_total`.
+full_info.size_arrays_user = 2;
+struct mptcp_subflow_info subflow_info[2] = {0};
+struct tcp_info tcp_info[2] = {0};
+
+socklen_t full_info_len = sizeof(struct mptcp_full_info);
+int fd = 0; //initialize with the file descriptor of an existing socket
+
+
+full_info.size_sfinfo_user = sizeof(struct struct mptcp_subflow_info);
+full_info.size_tcpinfo_user = sizeof(struct tcp_info);
+
+full_info.subflow_info = (unsigned long)&subflow_info[0];
+full_info.tcp_info = (unsigned long)&tcp_info[0];
+
+if (-1 == getsockopt(fd, SOL_MPTCP, MPTCP_FULL_INFO, &full_info, &full_info_len)) {
+	//handle the error here
+}
+else{
+	for (int i = 0; i < MIN(full_info.size_arrays_user, full_info.num_subflows); i++) {
+		printf("subflow %d:\n", i);
+		printf("\tid: %u\n", subflow_info[i].id);
+		printf("\trtt: %u\n", tcp_info[i].tcpi_rtt);
+	}
+
+	if ((int)offsetof(struct mptcp_full_info, mptcp_info) + (int)offsetof(struct mptcp_info, mptcpi_subflows_total)){
+    	printf("subflow count: %u\n", full_info.mptcp_info.mptcpi_subflows_total);
+	}
 }
 ```
 </details>
