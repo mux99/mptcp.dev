@@ -24,3 +24,10 @@ p {
 
 p > code {color: #7658ED;}
 li > code {color: #7658ED;}
+
+.ctsm:not([open]) summary::after{
+    display: inline;
+    content: '(click to see more)';
+    color: gray;
+    font-style: italic;
+}
