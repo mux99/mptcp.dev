@@ -21,8 +21,9 @@ In case MPTCP is not supported by the kernel or otherwise disabled, multiple `er
 - `EPROTONOSUPPORT`{: .text-red-200}: Protocol not supported, MPTCP is not compiled on >= v5.6
 - `EINVAL`{: .text-red-200}: Invalid argument, MPTCP is not available on kernels < 5.6
 
-*note: Since a program is not always compiled on the system it run's on.*
-*It is recommended to manually define* `IPPROTO_MPTCP` *as follows*
+{: .note}
+Since a program is not always compiled on the system it run's on.
+It is recommended to manually define `IPPROTO_MPTCP` as follows
 
 ```c
 #ifndef IPPROTO_MPTCP
@@ -194,8 +195,10 @@ The options supported by mptcp are:
 - `MPTCP_SUBFLOW_ADDRS`, defined as `3`, is used to interact with `struct mptcp_info`
 - `MPTCP_FULL_INFO`, defined as `4`, is used to interact with `struct mptcp_full_info` *example 2*
 
-**note: depending on the version of MPTCP used, some options might not be present**
-the presence or not of an option can be checked in two ways:
+{: .note}
+Depending on the version of MPTCP used, some options might not be present.
+
+The presence or not of an option can be checked in two ways:
 - first, if the variable used to store the data is initialized at zero, missing
 values will be zero.
 - second, the relative position of an entry in the structure can be compared to

@@ -15,7 +15,7 @@ security issues once they have been identified.
 Privacy implications, such as the potential for path correlation by servers, are
 important considerations.
 
-## Why & when should it be enable by default?
+## Why & when should it be enabled by default?
 Here, servers and clients must be considered separately:
 - client, the client is the main beneficiary of MPTCP, but it is only worth it to
 enable if the user as configured their systems to make use of its multi-path capability.

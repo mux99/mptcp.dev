@@ -30,12 +30,12 @@ This behavior is made possible by two internal components:
 packets to. The packet scheduler is also responsible for the load balancing of the
 packets across the *subflows* making use of the available bandwidth.
 
-![Diagram demonstrating the difference between MPTCP and TCP](https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/DifferenceTCP_MPTCP-en.png/1024px-DifferenceTCP_MPTCP-en.){: .bg-grey-lt-000 .half}
+![Diagram demonstrating the difference between MPTCP and TCP](https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/DifferenceTCP_MPTCP-en.png/1024px-DifferenceTCP_MPTCP-en.){: .bg-grey-lt-000}
 
 <details markdown="block">
 <summary>Example of MPTCP session</summary>
 
-![Example of MPTCP session](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/MPTCP-session-en.png/1920px-MPTCP-session-en.png){: .bg-grey-lt-000 .rounded}
+![Example of MPTCP session](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/MPTCP-session-en.png/1920px-MPTCP-session-en.png){: .bg-grey-lt-000}
 </details>
 
 ## Features

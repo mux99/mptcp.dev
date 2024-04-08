@@ -17,9 +17,11 @@ Apps can be forces to use one of the following methods
 - [mptcpize](https://www.mankier.com/8/mptcpize)
 
     `mptcpize run <app command>`  
-    This works by modifying the behavior of the underlying lib-c  
-    *note: some admins do not like this technique, that is why it is recommended*
-    *to update apps to support MPTCP nativelly*
+    This works by modifying the behavior of the underlying lib-c
+
+    {: .note}
+    Some admins do not like this technique, that is why it is recommended to update
+    apps to support MPTCP natively.
 
 - [GODEBUG](https://go-review.googlesource.com/c/go/+/507375)
 
