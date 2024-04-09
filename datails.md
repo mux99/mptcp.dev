@@ -6,4 +6,4 @@ nav_titles: true
 titles_max_depth: 2
 ---
 
-this page is currently empty, feel free to [contribute](https://www.mptcp.dev/details.md)
+this page is currently empty, feel free to [contribute](/edit/main/details.md)
