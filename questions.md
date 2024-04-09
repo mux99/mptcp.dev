@@ -8,12 +8,7 @@ titles_max_depth: 2
 
 ## Are there any security & privacy concerns?
 MPTCP aims to maintain the same level of security as traditional TCP, with specific
-mechanisms to counter common network attacks. While designed to be secure, vulnerabilities,
-as with any protocol, can occur. But the Linux kernel is also known to quickly fix
-security issues once they have been identified.
-
-Privacy implications, such as the potential for path correlation by servers, are
-important considerations.
+mechanisms to counter common network attacks. Find out more in [RFC 8684](https://datatracker.ietf.org/doc/html/rfc8684#name-security-considerations).
 
 ## Why & when should it be enabled by default?
 Here, servers and clients must be considered separately:
@@ -29,10 +24,16 @@ MPTCP support most TCP extensions but not yet all of them (the most obscure ones
 It is also documented that it is not yet compatible with KTLS.
 
 ## Are there any performance impact to the use of MPTCP?
-MPTCP is engineered to improve network resilience and utilization without adversely
-affecting the performance of TCP applications. It adds a manageable overhead that
+
+<details markdown="block">
+<summary>MPTCP is engineered to improve network resilience and utilization without adversely
+affecting the performance of TCP applications. It adds a manageable overhead that...</summary>
 becomes advantageous when leveraging multiple network paths, potentially increasing
 throughput and reliability.
+It is also important to note that "plain" TCP connection continue to use TCP socket,
+bypassing the MPTCP layer.
+
+</details> {: .ctsm}
 
 ## What are the supported operating systems?
 
@@ -54,6 +55,9 @@ MPTCP enhances TCP's functionality at the transport layer by enabling multipath
 capabilities, whereas QUIC, built atop UDP, focuses on reducing latency and improving
 connection migration. While both propose multipath functionality, their development
 and standardization stages differ.
+
+{: .note}
+Multipath capabilities in QUIC are not yes standardised. Here is the [draft](https://quicwg.org/multipath/draft-ietf-quic-multipath.html)
 
 ## What about middleboxes?
 MPTCP's interaction with middleboxes, which may not properly handle its extensions,
