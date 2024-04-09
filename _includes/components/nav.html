@@ -48,9 +48,6 @@
           {% if first.size == 0 and depth <= titles_max_depth %}
             {% assign title = line | split: '#' | last | strip %}
             {% assign url = node.url | relative_url %}
-            {% unless url == '/' %}
-              {% assign url = url | append: '/' %}
-            {% endunless %}
             <li class="nav-list-item"><a href="{{ url }}#{{ title | downcase | replace: ' ', '-'}}" class="nav-list-link">{{ title }}</a></li>
           {% endif %}
         {% endif %}
