@@ -1,11 +1,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
       if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        if (jtd.getTheme() === 'dark') {
-            jtd.setTheme('light');
-        } else {
-            jtd.setTheme('dark');
-        }
+        jtd.setTheme('dark');
       }
      });
   </script>
