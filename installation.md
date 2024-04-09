@@ -89,4 +89,5 @@ interfaces can be used to do so. Two steps are required to achieve this:
   ```sh
   ip route add default scope global nexthop via <default gateway> dev <exit interface name>
   ```
-  [man page](https://man7.org/linux/man-pages/man8/ip-route.8.html)
+  ip route [man page](https://man7.org/linux/man-pages/man8/ip-route.8.html)  
+  ip rule [man page](https://man7.org/linux/man-pages/man8/ip-rule.8.html)
