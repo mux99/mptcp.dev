@@ -22,14 +22,13 @@ In case MPTCP is not supported by the kernel or otherwise disabled, multiple `er
 - `EINVAL`{: .text-red-200}: Invalid argument, MPTCP is not available on kernels < 5.6
 
 {: .note}
-Since a program is not always compiled on the system it run's on.
-It is recommended to manually define `IPPROTO_MPTCP` as follows
-
-```c
-#ifndef IPPROTO_MPTCP
-#define IPPROTO_MPTCP 262
-#endif
-```
+> Since a program is not always compiled on the system it run's on.
+> It is recommended to manually define `IPPROTO_MPTCP` as follows
+> ```c
+> #ifndef IPPROTO_MPTCP
+> #define IPPROTO_MPTCP 262
+> #endif
+> ```
 
 ## Are you using MPTCP?
 A similar function to the following can be used. [source](https://github.com/multipath-tcp/mptcp_net-next/issues/294)

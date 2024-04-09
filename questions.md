@@ -65,9 +65,35 @@ is meticulously designed to ensure fallback to standard TCP when necessary. This
 ensures uninterrupted connectivity amidst the presence of NATs and firewalls.
 
 ## How should applications handle missing MPTCP support?
-If the system doesn't support MPTCP, a proper error will be returned by the kernel when creating the socket. the kernel version and its config can be different at build-time and at run-time (e.g. some builders are using chroot/containers with up to date software, but an old stable kernel). So we think it is better for the kernel to return an error at run-time if it is not supported than trying to guess what the end-user will have at build-time.
+If the system doesn't support MPTCP, a proper error will be returned by the kernel
+when creating the socket. the kernel version and its config can be different at
+build-time and at run-time (e.g. some builders are using chroot/containers with
+up to date software, but an old stable kernel). So we think it is better for the
+kernel to return an error at run-time if it is not supported than trying to guess
+what the end-user will have at build-time.
 
 ## Is MPTCP support limited to Linux systems?
-While MPTCP is well-supported on Linux, enabling advanced networking capabilities on other operating systems, like macOS, iOS, and potentially FreeBSD, presents challenges. The Linux platform offers accessible support through the IPPROTO_MPTCP definition, facilitating integration. On iOS, although MPTCP is available, it requires using the platform-specific SDK or private libraries, which may lack public documentation and official support. The situation on FreeBSD is even more complex, with efforts to implement MPTCP lagging behind and currently non-functional.
+While MPTCP is well-supported on Linux, enabling advanced networking capabilities
+on other operating systems, like macOS, iOS, and potentially FreeBSD, presents challenges.
+The Linux platform offers accessible support through the IPPROTO_MPTCP definition,
+facilitating integration. On iOS, although MPTCP is available, it requires using
+the platform-specific SDK or private libraries, which may lack public documentation
+and official support. The situation on FreeBSD is even more complex, with efforts
+to implement MPTCP lagging behind and currently non-functional.
 
-Given these challenges, extending MPTCP support beyond Linux requires careful consideration of platform-specific limitations and available documentation. The possibility remains open to incorporate support for other systems in the future, using conditional compilation to integrate platform-specific code as needed. This pragmatic approach allows for focusing on Linux initially while keeping the door open for broader support as MPTCP implementation matures across operating systems.
+Given these challenges, extending MPTCP support beyond Linux requires careful consideration
+of platform-specific limitations and available documentation. The possibility remains
+open to incorporate support for other systems in the future, using conditional compilation
+to integrate platform-specific code as needed. This pragmatic approach allows for
+focusing on Linux initially while keeping the door open for broader support as MPTCP
+implementation matures across operating systems.
+
+## What build time checks are needed/recommended?
+Since a common practice nowadays is to compile programs on older, more stable kernel
+versions. The is a chance that the lib-c used to compile the program does not define
+`IPPROTO_MPTCP`. However, it has no correlation with the ability of the system used
+to run the app to use MPTCP. To that end, it is recommended to define `IPPROTO_MPTCP`
+as chown [here](implementation.html#the-lib-c).
+
+Regrading checking at compile time for MPTCP is not recommended since, again, the
+system used to compile may not be the same as at runtime.

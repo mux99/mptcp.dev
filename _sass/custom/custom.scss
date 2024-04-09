@@ -25,6 +25,11 @@ p {
 p > code {color: #7658ED;}
 li > code {color: #7658ED;}
 
+body img {
+    border-radius: 15px;
+    padding: 5px;
+}
+
 .ctsm:not([open]) summary::after{
     display: inline;
     content: '(click to see more)';
