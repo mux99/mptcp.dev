@@ -33,6 +33,12 @@ url: "https://mux99.github.io/mptcp.dev/" # the base hostname & protocol for you
 theme: just-the-docs
 favicon_ico: "/assets/mptcp_logo.svg"
 
+mermaid:
+  # Version of mermaid library
+  # Pick an available version from https://cdn.jsdelivr.net/npm/mermaid/
+  version: "10.9.0"
+
+
 callouts:
   warning:
     title: Warning

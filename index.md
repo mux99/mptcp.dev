@@ -13,7 +13,28 @@ make use of multiple interfaces at once to send and receive TCP packets over a s
 connection. MPTCP can aggregate the bandwidth of multiple interfaces, it also allows
 a fail-over if one interface is down the traffic is seamlessly transferred to the others.
 
-![Diagram demonstrating the difference between MPTCP and TCP](https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/DifferenceTCP_MPTCP-en.png/1024px-DifferenceTCP_MPTCP-en.){: .bg-grey-lt-000}
+```mermaid
+graph TD;
+    subgraph MPTCP
+        direction LR
+
+        C_1[Client]
+        S_1[Server]
+    end
+
+    subgraph TCP
+        direction LR
+
+        C_2[Client]
+        S_2[Server]
+    end
+
+    C_1 <-- "5G (subflow 1)" --> S_1
+    C_1 <-- "Wi-Fi (subflow 2)" --> S_1
+
+    C_2 -. "5G (unused)" .-x S_2
+    C_2 <-- "Wi-Fi" --> S_2
+```
 
 Here is how it works! When a new socket is created with `IPPROTO_MPTCP` a *subflow*
 (or *path* both terms are interchangeable) is created, this *subflow* consist of
@@ -33,11 +54,41 @@ This behavior is made possible by two internal components:
 packets to. The packet scheduler is also responsible for the load balancing of the
 packets across the *subflows* making use of the available bandwidth.
 
-<details markdown="block">
-<summary>Example of MPTCP session</summary>
+```mermaid
+graph TD;
+    subgraph "Path Manager"
+        A_1[app]
 
-![Example of MPTCP session](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/MPTCP-session-en.png/1920px-MPTCP-session-en.png){: .bg-grey-lt-000}
-</details>
+        subgraph MPTCP_1[MPTCP]
+            PM(Path Manager)
+        end
+
+        I_11[5G]
+        I_12[Wi-Fi]
+    end
+
+    subgraph "Packet Scheduler"
+        direction LR
+        A_2[app]
+
+        subgraph MPTCP_2[MPTCP]
+            PS{Scheduler}
+        end
+
+        I_21[subflow 1]
+        I_22[subflow 2]
+    end
+
+A_2 ==> |out-bound packets| PS
+PS -.-> |route 1| I_21
+PS -.-> |route 2| I_22
+
+A_1 -.-> |potential subflow| I_11
+A_1 -.-> |potential subflow| I_12
+
+PM --> |open/close| I_11
+PM --> |open/close| I_12
+```
 
 ## Features
 
