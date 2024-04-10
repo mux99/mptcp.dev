@@ -18,15 +18,15 @@ graph TD;
     subgraph MPTCP
         direction LR
 
-        C_1[<img src="/assets/phone.svg">]
-        S_1[<img src="/assets/cloud.svg">]
+        C_1[<img src="{{ site.url }}/assets/phone.svg">]
+        S_1[<img src="{{ site.url }}/assets/cloud.svg">]
     end
 
     subgraph TCP
         direction LR
 
-        C_2[<img src="/assets/phone.svg">]
-        S_2[<img src="/assets/cloud.svg">]
+        C_2[<img src="{{ site.url }}/assets/phone.svg">]
+        S_2[<img src="{{ site.url }}/assets/cloud.svg">]
     end
 
     C_1 <-- "5G (subflow 1)" --> S_1
@@ -57,7 +57,7 @@ packets across the *subflows* making use of the available bandwidth.
 ```mermaid
 graph TD;
     subgraph "Path Manager"
-        A_1[<img src="/assets/phone.svg">]
+        A_1[<img src="{{ site.url }}/assets/phone.svg">]
 
         subgraph MPTCP_1[MPTCP]
             PM(Path Manager)
@@ -69,7 +69,7 @@ graph TD;
 
     subgraph "Packet Scheduler"
         direction LR
-        A_2[<img src="/assets/phone.svg">]
+        A_2[<img src="{{ site.url }}/assets/phone.svg">]
 
         subgraph MPTCP_2[MPTCP]
             PS{Scheduler}
