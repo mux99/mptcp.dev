@@ -34,6 +34,11 @@ graph TD;
 
     C_2 -. "5G<br>(unused)" .-x S_2
     C_2 <-- "Wi-Fi" --> S_2
+
+    linkStyle 0 stroke:green;
+    linkStyle 1 stroke:green;
+    linkStyle 2 stroke:red;
+    linkStyle 3 stroke:green;
 ```
 
 Here is how it works! When a new socket is created with `IPPROTO_MPTCP` a *subflow*
@@ -49,45 +54,59 @@ in the *option* field. In that case, the connection will be 'downgraded' to plai
 TCP and will continue without additional *subflows*.
 
 This behavior is made possible by two internal components:
-* **path manager**, it is responsible for the managing of *subflows* from creation to deletion.
+* **path manager**, it is responsible for the managing of *subflows* from creation
+  to deletion. On the server side, it also broadcast available IPs that could be used
+  by the client to create ne *subflows*
+
+  ```mermaid
+  graph TD;
+      subgraph "Path Manager"
+          direction LR
+          A_1[<img src="{{ site.url }}/assets/phone.svg">]
+
+          I_11[5G]
+          I_12[Wi-Fi]
+
+          B_1[<img src="{{ site.url }}/assets/cloud.svg">]
+      end
+
+      A_1 -.- |potential subflow| I_11
+      A_1 <--> |established subflow| I_12
+      A_1 ~~~|"The path manager is responsible for<br>the creation end deletion of paths"| A_1
+      B_1 ~~~|"on the server side it broadcast<br> available IP for new subflows"| B_1
+
+      B_1 -.-> |path available message| A_1
+
+      I_11 -.- B_1
+      I_12 <--> B_1
+
+      linkStyle 0 stroke:orange;
+      linkStyle 1 stroke:green;
+      linkStyle 5 stroke:orange;
+      linkStyle 6 stroke:green;
+  ```
+
 * **packet scheduler**, it is tasked with choosing which available *subflow* to send
-packets to. The packet scheduler is also responsible for the load balancing of the
-packets across the *subflows* making use of the available bandwidth.
+  packets to. The packet scheduler is also responsible for the load balancing of the
+  packets across the *subflows* making use of the available bandwidth.
 
-```mermaid
-graph TD;
-    subgraph "Path Manager"
-        direction LR
-        A_1[<img src="{{ site.url }}/assets/phone.svg">]
+  ```mermaid
+  graph TD;
+      subgraph "Packet Scheduler"
+          direction LR
+          A_2[<img src="{{ site.url }}/assets/phone.svg">]
 
-        I_11[5G]
-        I_12[Wi-Fi]
+          PS{Scheduler}
 
-        B_1[<img src="{{ site.url }}/assets/cloud.svg">]
-    end
+          I_21[subflow 1]
+          I_22[subflow 2]
+      end
 
-    subgraph "Packet Scheduler"
-        direction LR
-        A_2[<img src="{{ site.url }}/assets/phone.svg">]
-
-        PS{Scheduler}
-
-        I_21[subflow 1]
-        I_22[subflow 2]
-    end
-
-A_2 ==> PS
-PS --> I_21
-PS --> I_22
-PS ~~~|"The scheduler distribute<br>packets between both subflows"| PS
-
-A_1 -.-> |potential subflow| I_11
-A_1 -.-> |potential subflow| I_12
-A_1 ~~~|"The path manager is responsible for<br>the creation end deletion of paths"| A_1
-
-I_11 --> B_1
-I_12 --> B_1
-```
+      A_2 ==> PS
+      PS --> I_21
+      PS --> I_22
+      PS ~~~|"The scheduler distribute<br>packets between subflows"| PS
+  ```
 
 ## Features
 
