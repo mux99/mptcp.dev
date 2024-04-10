@@ -29,10 +29,10 @@ graph TD;
         S_2[<img src="{{ site.url }}/assets/cloud.svg">]
     end
 
-    C_1 <-- "5G (subflow 1)" --> S_1
-    C_1 <-- "Wi-Fi (subflow 2)" --> S_1
+    C_1 <-- "5G<br>(subflow 1)" --> S_1
+    C_1 <-- "Wi-Fi<br>(subflow 2)" --> S_1
 
-    C_2 -. "5G (unused)" .-x S_2
+    C_2 -. "5G<br>(unused)" .-x S_2
     C_2 <-- "Wi-Fi" --> S_2
 ```
 
@@ -57,37 +57,36 @@ packets across the *subflows* making use of the available bandwidth.
 ```mermaid
 graph TD;
     subgraph "Path Manager"
+        direction LR
         A_1[<img src="{{ site.url }}/assets/phone.svg">]
-
-        subgraph MPTCP_1[MPTCP]
-            PM(Path Manager)
-        end
 
         I_11[5G]
         I_12[Wi-Fi]
+
+        B_1[<img src="{{ site.url }}/assets/cloud.svg">]
     end
 
     subgraph "Packet Scheduler"
         direction LR
         A_2[<img src="{{ site.url }}/assets/phone.svg">]
 
-        subgraph MPTCP_2[MPTCP]
-            PS{Scheduler}
-        end
+        PS{Scheduler}
 
         I_21[subflow 1]
         I_22[subflow 2]
     end
 
-A_2 ==> |out-bound packets| PS
-PS -.-> |route 1| I_21
-PS -.-> |route 2| I_22
+A_2 ==> PS
+PS --> I_21
+PS --> I_22
+PS ~~~|"The scheduler distribute<br>packets between both subflows"| PS
 
 A_1 -.-> |potential subflow| I_11
 A_1 -.-> |potential subflow| I_12
+A_1 ~~~|"The path manager is responsible for<br>the creation end deletion of paths"| A_1
 
-PM --> |open/close| I_11
-PM --> |open/close| I_12
+I_11 --> B_1
+I_12 --> B_1
 ```
 
 ## Features
