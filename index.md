@@ -6,34 +6,33 @@ nav_titles: true
 titles_max_depth: 2
 ---
 
-Multipath TCP or [MPTCP](https://en.wikipedia.org/wiki/Multipath_TCP) is an extension
-of [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol) described
-in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows a device to
-make use of multiple interfaces at once to send and receive TCP packets over a single
-connection. MPTCP can aggregate the bandwidth of multiple interfaces, it also allows
-a fail-over if one interface is down the traffic is seamlessly transferred to the others.
+Multipath TCP or [MPTCP](https://en.wikipedia.org/wiki/Multipath_TCP) is an
+extension to the standard [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)
+described in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows
+a device to make use of multiple interfaces at once to send and receive TCP
+packets over a single MPTCP connection. MPTCP can aggregate the bandwidth of
+multiple interfaces, it also allows a fail-over if one path is down, and the
+traffic is seamlessly reinjected to another one.
 
 ```mermaid
 graph TD;
     subgraph MPTCP
         direction LR
-
-        C_1( fa:fa-mobile )
-        S_1( fa:fa-cloud )
+        C_1(<font size="20px">fa:fa-mobile</font>)
+        S_1((<font size="20px">fa:fa-cloud</font>))
     end
 
     subgraph TCP
         direction LR
-
-        C_2( fa:fa-mobile )
-        S_2( fa:fa-cloud )
+        C_2(<font size="20px">fa:fa-mobile</font>)
+        S_2((<font size="20px">fa:fa-cloud</font>))
     end
 
-    C_1 <-- "5G<br>(subflow 1)" --> S_1
-    C_1 <-- "Wi-Fi<br>(subflow 2)" --> S_1
+    C_1 <== "5G" ==> S_1
+    C_1 <== "Wi-Fi<br /><br />Multiple paths (<i>subflows</i>)<br />at the same time" ==> S_1
 
-    C_2 -. "5G<br>(unused)" .-x S_2
-    C_2 <-- "Wi-Fi" --> S_2
+    C_2 x-. "5G" .-x S_2
+    C_2 <== "Wi-Fi<br /><br />One path at a time" ==> S_2
 
     linkStyle 0 stroke:green;
     linkStyle 1 stroke:green;
@@ -41,82 +40,78 @@ graph TD;
     linkStyle 3 stroke:green;
 ```
 
-Here is how it works! When a new socket is created with `IPPROTO_MPTCP` a *subflow*
-(or *path* both terms are interchangeable) is created, this *subflow* consist of
-a regular TCP connection that is used to transmit data trough one interface. Additional
-*subflows* can be negotiated later between the hosts. For the distant host to be
-able to detect the use of MPTCP, a new field is added to the *option* field of the
-underlying TCP *subflow*. This field contains, amongst other things, `MP_CAPABLE`
-that tells the other host to use MPTCP (if it's socket support's it). If the distant
-host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox) in between does
-not support it, the response `SYN+ACK` packet will not contain the MPTCP options
-in the *option* field. In that case, the connection will be 'downgraded' to plain
-TCP and will continue without additional *subflows*.
+Technically, when a new socket is created with the `IPPROTO_MPTCP` protocol
+(Linux-specific), a *subflow* (or *path*) is created. This *subflow* consists of
+a regular TCP connection that is used to transmit data trough one interface.
+Additional *subflows* can be negotiated later between the hosts. For the distant
+host to be able to detect the use of MPTCP, a new field is added to the TCP
+*option* field of the underlying TCP *subflow*. This field contains, amongst
+other things, `MP_CAPABLE` that tells the other host to use MPTCP if it is
+supported. If the distant host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox)
+in between does not support it, the response `SYN+ACK` packet will not contain
+the MPTCP options in the TCP *option* field. In that case, the connection will
+be "downgraded" to plain TCP, and it will continue with a single path.
 
 This behavior is made possible by two internal components:
-* **path manager**, it is responsible for the managing of *subflows* from creation
-  to deletion. On the server side, it also broadcast available IPs that could be used
-  by the client to create ne *subflows*
+* **Path Manager**: it is managing *subflows*, from creation to deletion, but
+  also the addresses announcements. Typically, it is the client side that
+  initiates subflows, and the server side that announces additional addresses.
 
   ```mermaid
-  graph TD;
-      subgraph "Path Manager"
-          direction LR
-          A_1( fa:fa-mobile )
+  graph LR;
+      C_1(<font size="20px">fa:fa-mobile</font>)
+      S_1((<font size="20px">fa:fa-cloud</font>))
 
-          I_11(5G)
-          I_12(Wi-Fi)
-
-          B_1( fa:fa-cloud )
-      end
-
-      A_1 -.- |potential subflow| I_11
-      A_1 <--> |established subflow| I_12
-      A_1 ~~~|"The path manager is responsible for<br>the creation end deletion of paths"| A_1
-      B_1 ~~~|"on the server side it broadcast<br> available IP for new subflows"| B_1
-
-      B_1 -.-> |path available message| A_1
-
-      I_11 -.- B_1
-      I_12 <--> B_1
+      C_1 -. "Potential subflow" -.- S_1
+      C_1 <== "Initial subflow" ==> S_1
+      C_1 ~~~|"Subflows creation"| C_1
+      S_1 ~~~|"Addresses announcement"| S_1
 
       linkStyle 0 stroke:orange;
       linkStyle 1 stroke:green;
-      linkStyle 5 stroke:orange;
-      linkStyle 6 stroke:green;
   ```
 
-* **packet scheduler**, it is tasked with choosing which available *subflow* to send
-  packets to. The packet scheduler is also responsible for the load balancing of the
-  packets across the *subflows* making use of the available bandwidth.
+{: .note}
+As of Linux v6.10, there are two path managers, controlled by the `net.mptcp.pm_type`
+sysctl knob: the in-kernel one (type `0`) where the same rules are applied for
+all the connections (see: `ip mptcp`) ; and the userspace one (type `1`),
+controlled by a userspace daemon (i.e. [`mptcpd`](https://mptcpd.mptcp.dev/))
+where different rules can be applied by connections.
+
+* **Packet Scheduler**: it is in charge of selecting which available
+  *subflow(s)* to use to send the next data packets. It can decide to use
+  maximize the use of the available bandwidth, only to pick the path with the
+  lower latency or any other policy depending on the configuration.
 
   ```mermaid
-  graph TD;
-      subgraph "Packet Scheduler"
-          direction LR
-          A_2( fa:fa-mobile )
+  graph LR;
+      A_2(<font size="20px">fa:fa-user</font>)
 
-          PS{Scheduler}
+      PS{Packet<br />Scheduler}
 
-          I_21(subflow 1)
-          I_22(subflow 2)
-      end
+      I_21(subflow 1)
+      I_22(subflow 2)
 
-      A_2 ==> PS
-      PS --> I_21
-      PS --> I_22
-      PS ~~~|"The scheduler distribute<br>packets between subflows"| PS
+      A_2 == "fa:fa-box fa:fa-box fa:fa-box" ==> PS
+      PS -- "fa:fa-box fa:fa-box" --> I_21
+      PS -- "fa:fa-box" --> I_22
+      PS ~~~|"Packets distribution between subflows"| PS
   ```
+
+{: .note}
+As of Linux v6.10, there is only one packet scheduler, controlled by some sysctl
+knobs in `net.mptcp`.
 
 ## Features
 
-As of Linux v5.19, major features of MPTCP include:
+As of Linux v6.10, major features of MPTCP include:
 
 * Support of the `IPPROTO_MPTCP` protocol in `socket()` system calls.
 * Fallback from MPTCP to TCP if the peer or a middlebox do not support MPTCP.
 * Path management using either an in-kernel or userspace path manager.
 * Socket options that are commonly used with TCP sockets.
-* Debug features including MIB counters, diag support (used by the `ss` command), and tracepoints.
+* Debug features including MIB counters, diag support (used by the `ss` command),
+  and tracepoints.
 
 See the
 [ChangeLog](https://github.com/multipath-tcp/mptcp_net-next/wiki/#changelog)
@@ -144,12 +139,7 @@ for more details.
 ## Kernel Development
 
 * [Git Repository](https://github.com/multipath-tcp/mptcp_net-next.git) ([branch descriptions](https://github.com/multipath-tcp/mptcp_net-next/wiki/Git-Branches))
-* [Issue tracker](https://github.com/multipath-tcp/mptcp_net-next/issues)
 * [Patchwork](https://patchwork.kernel.org/project/mptcp/)
 * [Continuous Integration](https://github.com/multipath-tcp/mptcp_net-next/wiki/CI)
 * [Testing](https://github.com/multipath-tcp/mptcp_net-next/wiki/Testing)
-
-<!-- commented because it should be integrated into one of the above sections (which might themselves need to change)
-This site is new and still evolving, so please refer to the [Linux MPTCP Upstream Project wiki](https://github.com/multipath-tcp/mptcp_net-next/wiki) for additional information.
-
-_For out-of-tree kernels before v5.6 and an implementation of the experimental [MPTCP v0](https://www.rfc-editor.org/rfc/rfc6824.html) protocol, see https://multipath-tcp.org/_ -->
+* [Issue tracker](https://github.com/multipath-tcp/mptcp_net-next/issues)
