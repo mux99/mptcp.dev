@@ -36,3 +36,11 @@ main img {
     color: gray;
     font-style: italic;
 }
+
+@media (prefers-color-scheme: dark) {
+    .color-main {
+        color: #2C84FA;
+    }
+    p > code {color: #668BBB;}
+    li > code {color: #668BBB;}
+}
