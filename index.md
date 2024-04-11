@@ -18,15 +18,15 @@ graph TD;
     subgraph MPTCP
         direction LR
 
-        C_1[fa:fa-mobile]
-        S_1[fa:fa-cloud]
+        C_1( fa:fa-mobile )
+        S_1( fa:fa-cloud )
     end
 
     subgraph TCP
         direction LR
 
-        C_2[fa:fa-mobile]
-        S_2[fa:fa-cloud]
+        C_2( fa:fa-mobile )
+        S_2( fa:fa-cloud )
     end
 
     C_1 <-- "5G<br>(subflow 1)" --> S_1
@@ -62,12 +62,12 @@ This behavior is made possible by two internal components:
   graph TD;
       subgraph "Path Manager"
           direction LR
-          A_1[fa:fa-mobile]
+          A_1( fa:fa-mobile )
 
-          I_11[5G]
-          I_12[Wi-Fi]
+          I_11(5G)
+          I_12(Wi-Fi)
 
-          B_1[fa:fa-cloud]
+          B_1( fa:fa-cloud )
       end
 
       A_1 -.- |potential subflow| I_11
@@ -94,12 +94,12 @@ This behavior is made possible by two internal components:
   graph TD;
       subgraph "Packet Scheduler"
           direction LR
-          A_2[fa:fa-mobile]
+          A_2( fa:fa-mobile )
 
           PS{Scheduler}
 
-          I_21[subflow 1]
-          I_22[subflow 2]
+          I_21(subflow 1)
+          I_22(subflow 2)
       end
 
       A_2 ==> PS
