@@ -3,7 +3,7 @@ layout: home
 title: Supported apps
 nav_order: 7
 ---
-the apps listed bellow support MPTCP natively, other apps can be forced to use it by following instructions [here](installation.html#force-mptcp)
+the apps listed bellow support MPTCP natively, other apps can be forced to use it by following instructions [here](setup.html#force-mptcp)
 
 ## linux apps
 
@@ -33,4 +33,4 @@ the apps listed bellow support MPTCP natively, other apps can be forced to use i
 | [TCPDump](https://www.tcpdump.org/) | [4.5.0+](https://github.com/the-tcpdump-group/tcpdump/commit/578dd316f3) |
 | [Wireshark](https://www.wireshark.org/) | [4.2.4+](https://github.com/wireshark/wireshark/commit/3bc42dbf8e) |
 
-Please open a new [issue](https://github.com/multipath-tcp/mptcp.dev/issues) or a [pull request](https://github.com/multipath-tcp/mptcp.dev/pulls) if you know other apps supporting MPTCP natively. Meaning they are able to use MPTCP without resolving to using techniques like `mptcpize` described [here](installation.html#force-mptcp).
+Please open a new [issue](https://github.com/multipath-tcp/mptcp.dev/issues) or a [pull request](https://github.com/multipath-tcp/mptcp.dev/pulls) if you know other apps supporting MPTCP natively. Meaning they are able to use MPTCP without resolving to using techniques like `mptcpize` described [here](setup.html#force-mptcp).

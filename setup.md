@@ -1,6 +1,6 @@
 ---
 layout: home
-title: Installation
+title: Setup
 nav_order: 2
 nav_titles: true
 titles_max_depth: 2
@@ -16,7 +16,7 @@ Apps can be forces to use one of the following methods
 
 - [mptcpize](https://www.mankier.com/8/mptcpize)
 
-    `mptcpize run <app command>`  
+    `mptcpize run <app command>`
     This works by modifying the behavior of the underlying lib-c
 
     {: .note}
@@ -56,13 +56,13 @@ interfaces can be used to do so. Two steps are required to achieve this:
   mptcp. To set MPTCP endpoints, you use the `ip mptcp` command. There is basically
   two cases:
 
-  Servers:  
+  Servers:
   this is the option to use when you want distant hosts to create new subflow on that interface
   ```sh
   ip mptcp endpoint add <ip address> signal
   ```
 
-  Client:  
+  Client:
   this, on the other hand, tells MPTCP to use this interface to create new subflows.
   ```sh
   ip mptcp endpoint add <ip address> subflow
@@ -89,5 +89,5 @@ interfaces can be used to do so. Two steps are required to achieve this:
   ```sh
   ip route add default scope global nexthop via <default gateway> dev <exit interface name>
   ```
-  ip route [man page](https://man7.org/linux/man-pages/man8/ip-route.8.html)  
+  ip route [man page](https://man7.org/linux/man-pages/man8/ip-route.8.html)
   ip rule [man page](https://man7.org/linux/man-pages/man8/ip-rule.8.html)
