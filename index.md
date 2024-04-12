@@ -106,7 +106,7 @@ knobs in `net.mptcp`.
 
 As of Linux v6.10, major features of MPTCP include:
 
-* Support of the `IPPROTO_MPTCP` protocol in `socket()` system calls.
+* Support of the [`IPPROTO_MPTCP`](implementation.html) protocol in `socket()` system calls.
 * Fallback from MPTCP to TCP if the peer or a middlebox do not support MPTCP.
 * Path management using either an in-kernel or userspace path manager.
 * Socket options that are commonly used with TCP sockets.
@@ -126,19 +126,25 @@ for more details.
 ## Projects
 
 * Maintained by MPTCP community members
-  * Kernel development on GitHub: https://github.com/multipath-tcp/mptcp_net-next/
-  * Multipath TCP Daemon: https://github.com/intel/mptcpd
-    * The `mptcpd` daemon can do full userspace path management or control the in-kernel path manager.
-    * Includes the `mptcpize` utility to allow legacy TCP binaries to use MPTCP.
-  * Packetdrill with MPTCP enhancements: https://github.com/multipath-tcp/packetdrill
+  * [Kernel development on GitHub](https://github.com/multipath-tcp/mptcp_net-next/)
+  * [Multipath TCP Daemon](https://github.com/intel/mptcpd)
+    * The [`mptcpd`](https://www.mankier.com/8/mptcpd) daemon can do full
+      userspace path management or control the in-kernel path manager.
+    * Includes the [`mptcpize`](https://www.mankier.com/8/mptcpize) utility to
+      allow legacy TCP binaries to use MPTCP.
+  * [Packetdrill with MPTCP support](https://github.com/multipath-tcp/packetdrill)
 * Projects with MPTCP-related enhancements
-  * [iproute2](https://wiki.linuxfoundation.org/networking/iproute2) (for the `ip mptcp` command)
-  * [Network Manager](https://networkmanager.dev): MPTCP features are included starting with v1.40.
-  * [Multipath TCP applications](https://github.com/mptcp-apps/): A project to coordinate MPTCP updates for popular TCP applications.
+  * [iproute2](https://wiki.linuxfoundation.org/networking/iproute2) (for the
+    [`ip mptcp`](https://www.mankier.com/8/ip-mptcp) command)
+  * [Network Manager](https://networkmanager.dev): MPTCP features are included
+    starting with v1.40.
+  * [Multipath TCP applications](https://github.com/mptcp-apps/): A project to
+    coordinate MPTCP updates for popular TCP applications.
 
 ## Kernel Development
 
-* [Git Repository](https://github.com/multipath-tcp/mptcp_net-next.git) ([branch descriptions](https://github.com/multipath-tcp/mptcp_net-next/wiki/Git-Branches))
+* [Git Repository](https://github.com/multipath-tcp/mptcp_net-next.git)
+  ([branch descriptions](https://github.com/multipath-tcp/mptcp_net-next/wiki/Git-Branches))
 * [Patchwork](https://patchwork.kernel.org/project/mptcp/)
 * [Continuous Integration](https://github.com/multipath-tcp/mptcp_net-next/wiki/CI)
 * [Testing](https://github.com/multipath-tcp/mptcp_net-next/wiki/Testing)
