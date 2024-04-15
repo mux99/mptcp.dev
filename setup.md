@@ -23,11 +23,9 @@ features and bug fixes are regularly backported.
 
 ## Enable MPTCP
 
-{: .new-title }
-> Info
->
-> Most recent GNU/Linux distributions support MPTCP by default. It is very
-> likely MPTCP is already enabled, and you can skip this section.
+{: .info }
+Most recent GNU/Linux distributions support MPTCP by default. It is very
+likely MPTCP is already enabled, and you can skip this section.
 
 ### Linux kernel build configuration
 
@@ -105,9 +103,7 @@ To be able to use multiple IP addresses on a host to create multiple *subflows*
 packets properly, and the MPTCP path-manager needs to know what IP addresses can
 be used.
 
-{: .new-title }
-> Info
->
+{: .info}
 > A server having only one network interface does not need to configure anything
 > else: the client will create additional subflows it wants to.
 >
