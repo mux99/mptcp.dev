@@ -44,5 +44,5 @@ free to look at this [spreadsheet](https://docs.google.com/spreadsheets/d/1F2-v4
 ## Others?
 
 Please open a new [pull request](https://github.com/multipath-tcp/mptcp.dev/pulls)
-or an [issue](https://github.com/multipath-tcp/mptcp.dev/issues) if you know
-other apps supporting MPTCP natively.
+or an [issue](https://github.com/multipath-tcp/mptcp.dev/issues) if you know any
+other apps with and important community of user, and supporting MPTCP natively.
