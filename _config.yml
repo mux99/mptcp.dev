@@ -38,6 +38,13 @@ mermaid:
   # Pick an available version from https://cdn.jsdelivr.net/npm/mermaid/
   version: "10.9.0"
 
+# Aux links for the upper right navigation
+aux_links:
+  "Improve this website":
+    - "//github.com/multipath-tcp/mptcp.dev"
+
+# Makes Aux links open in a new tab. Default is false
+aux_links_new_tab: true
 
 callouts:
   warning:
@@ -51,5 +58,3 @@ callouts:
   info:
     title: Info
     color: green
-
-
