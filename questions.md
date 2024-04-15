@@ -7,93 +7,118 @@ titles_max_depth: 2
 ---
 
 ## Are there any security & privacy concerns?
-MPTCP aims to maintain the same level of security as traditional TCP, with specific
-mechanisms to counter common network attacks. Find out more in [RFC 8684](https://datatracker.ietf.org/doc/html/rfc8684#name-security-considerations).
+MPTCP aims to maintain the same level of security as traditional TCP, with
+specific mechanisms to counter common network attacks. Find out more in the
+[RFC 8684](https://datatracker.ietf.org/doc/html/rfc8684#name-security-considerations).
 
-## Why & when should it be enabled by default?
-Here, servers and clients must be considered separately:
-- client, the client is the main beneficiary of MPTCP, but it is only worth it to
-enable if the user as configured their systems to make use of its multi-path capability.
-
-- servers, on servers it should be enabled by default to allow it's users to choose
-whether or to to use MPTCP. Being backward compatible, an MPTCP socket is able to
-communicate with a TCP socket and will devolve itself to TCP.
-
-## Are there unsupported TCP options?
-MPTCP support most TCP extensions but not yet all of them (the most obscure ones).
-It is also documented that it is not yet compatible with KTLS.
-
-## Are there any performance impact to the use of MPTCP?
-
+## Why & when should MPTCP be enabled by default?
 <details markdown="block">
-<summary>MPTCP is engineered to improve network resilience and utilization without adversely
-affecting the performance of TCP applications. It adds a manageable overhead that...</summary>
-becomes advantageous when leveraging multiple network paths, potentially increasing
-throughput and reliability.
-It is also important to note that "plain" TCP connection continue to use TCP socket,
-bypassing the MPTCP layer.
+<summary>Here, servers and clients must be considered separately: MPTCP can be
+enabled by default on servers, to be used only when requested, with a minimal
+impact ; while on the client side, it might be interesting to notify them it is
+being used by default. </summary>
 
+- Clients are usually the main beneficiaries of MPTCP, but it is mainly worth it
+  to enable MPTCP when users have [configured](setup.html#using-multiple-ip-addresses)
+  their system to make use of its multipath capability. Still, even when only
+  one network interface is available, MPTCP can be useful in mobility use-cases:
+  when often switching from one network to another without stopping the
+  connections. When servers don't support MPTCP, the connection continues in
+  "plain" TCP.
+
+- Servers usually don't directly benefit from MPTCP, because they are not moving,
+  and with fast and reliable connections. But their client will, and it will be
+  useful for the servers too: letting them switch from one network to another
+  without disconnection, not to restart a long operation again ; having faster
+  connections, not to hold a transfer for a too long time, etc. We recommend
+  enabling MPTCP on servers by default to let users choosing whether to use
+  MPTCP. When clients don't request to use MPTCP, server applications will
+  receive "plain" TCP sockets from the kernel when connections are `accept`ed,
+  making the performance impact minimal.
 </details> {: .ctsm}
 
+## Are there any performance impact to use MPTCP?
+MPTCP is engineered to improve network resilience and utilization without
+adversely affecting the performance of TCP applications. It adds a few bytes in
+each TCP packet, causing a manageable overhead (~1%) that becomes advantageous
+when leveraging multiple network paths, potentially increasing throughput and
+reliability.
+
+It is also important to note that, when clients don't request to use MPTCP,
+server applications will receive "plain" TCP sockets from the kernel when
+connections are `accept`ed, making the performance impact minimal.
+
+## Are there unsupported TCP socket options?
+MPTCP support most TCP extensions. It is possible some most obscure ones are not
+supported. If it is the case, please document your use-case in a new
+[issue](https://github.com/multipath-tcp/mptcp_net-next/issues/).
+
+For example, MPTCP in the Linux kernel is [currently](https://github.com/multipath-tcp/mptcp_net-next/issues/480)
+not compatible with KTLS yet.
+
 ## What are the supported operating systems?
-
 <details markdown="block">
-<summary> Originally seen as predominantly supported by Linux (from kernel version 5.6),
-the adoption of MPTCP extends beyond to various platforms including iOS. But... </summary>
+<summary>MPTCP is supported in the official Linux kernel from version 5.6. Any
+applications can [easily use it](implementation.html). The adoption of MPTCP
+extends beyond to various platforms including iOS. But... </summary>
 
-MPTCP on IOS has strings attached:
-- It is easy only if you use their SDK: [doc](https://developer.apple.com/documentation/foundation/nsurlsessionconfiguration/improving_network_reliability_using_multipath_tcp)
-- If not, you need to use private libraries (we are not even sure the headers are available) with specific functions to create sockets that are apparently not documented, e.g., [OpenSSH for IOS](https://github.com/apple-oss-distributions/OpenSSH/blob/main/openssh/sshconnect.c#L487).
+The usage of MPTCP on IOS is somehow restricted:
+- It is easy only when applications use their
+  [SDK](https://developer.apple.com/documentation/foundation/nsurlsessionconfiguration/improving_network_reliability_using_multipath_tcp)
+- If not, it looks like applications need to use private libraries (we are not
+  even sure the headers are available) with specific functions to create sockets
+  that are apparently not documented, e.g.
+  [OpenSSH for IOS](https://github.com/apple-oss-distributions/OpenSSH/blob/main/openssh/sshconnect.c#L487).
+  (This might change in the future.)
 
-On FreeBSD, there was an ongoing implementation, but that was years ago, and not working today according to [this](http://www-cs-students.stanford.edu/~sjac/freebsd_mptcp_info.html).
+On FreeBSD, there was an ongoing implementation, but that was years ago, and not
+working today according to
+[this](http://www-cs-students.stanford.edu/~sjac/freebsd_mptcp_info.html).
 
-There are other implementations, but on specific systems (Citrix load balancer, userspace, etc.): more details [here](http://blog.multipath-tcp.org/blog/html/2018/12/15/apple_and_multipath_tcp.html).
+There are other implementations, but on specific systems (Citrix load balancer,
+userspace, etc.): more details [here](http://blog.multipath-tcp.org/blog/html/2018/12/15/apple_and_multipath_tcp.html).
+
+It is possible to use MPTCP on Windows with
+[WSL2](https://perso.uclouvain.be/tom.barbette/mptcp-on-windows-with-wsl2/).
 </details> {: .ctsm}
 
 ## MPTCP vs. QUIC
 MPTCP enhances TCP's functionality at the transport layer by enabling multipath
-capabilities, whereas QUIC, built atop UDP, focuses on reducing latency and improving
-connection migration. While both propose multipath functionality, their development
-and standardization stages differ.
+capabilities, whereas QUIC, built atop UDP, focuses on reducing latency and
+improving connection migration. While both propose multipath functionality,
+their development and standardization stages differ.
 
-{: .note}
-Multipath capabilities in QUIC are not yes standardised. Here is the [draft](https://quicwg.org/multipath/draft-ietf-quic-multipath.html)
+Multipath capability in QUIC is not yet standardized. Here is the
+[draft](https://quicwg.org/multipath/draft-ietf-quic-multipath.html).
+Applications might have more configuration options to be able to select the
+different paths to use, and the technique to use to data over the different
+paths.
 
 ## What about middleboxes?
-MPTCP's interaction with middleboxes, which may not properly handle its extensions,
-is meticulously designed to ensure fallback to standard TCP when necessary. This
-ensures uninterrupted connectivity amidst the presence of NATs and firewalls.
+MPTCP is meticulously designed to ensure fallback to standard TCP when necessary.
+This ensures uninterrupted connectivity amidst the presence of NATs and
+firewalls (middleboxes) that might remove "unknown" TCP options like MPTCP.
+
+If you notice that MPTCP is not allowed in your network, and "plain" TCP is used
+instead, please report this issue to the people in charge of this network: it is
+very likely a mistake that MPTCP is not allowed.
 
 ## How should applications handle missing MPTCP support?
-If the system doesn't support MPTCP, a proper error will be returned by the kernel
-when creating the socket. the kernel version and its config can be different at
-build-time and at run-time (e.g. some builders are using chroot/containers with
-up to date software, but an old stable kernel). So we think it is better for the
-kernel to return an error at run-time if it is not supported than trying to guess
-what the end-user will have at build-time.
-
-## Is MPTCP support limited to Linux systems?
-While MPTCP is well-supported on Linux, enabling advanced networking capabilities
-on other operating systems, like macOS, iOS, and potentially FreeBSD, presents challenges.
-The Linux platform offers accessible support through the IPPROTO_MPTCP definition,
-facilitating integration. On iOS, although MPTCP is available, it requires using
-the platform-specific SDK or private libraries, which may lack public documentation
-and official support. The situation on FreeBSD is even more complex, with efforts
-to implement MPTCP lagging behind and currently non-functional.
-
-Given these challenges, extending MPTCP support beyond Linux requires careful consideration
-of platform-specific limitations and available documentation. The possibility remains
-open to incorporate support for other systems in the future, using conditional compilation
-to integrate platform-specific code as needed. This pragmatic approach allows for
-focusing on Linux initially while keeping the door open for broader support as MPTCP
-implementation matures across operating systems.
+Applications supporting MPTCP natively should first try to create an MPTCP
+socket, then fallback to "plain" TCP in case of errors. If the Linux kernel does
+not support MPTCP, a proper error will be returned when creating the socket. The
+kernel version and its config can be different at build-time and at run-time
+(e.g. some builders are using chroot/containers with up-to-date softwares, but
+an old stable kernel). So it is recommended to do such checks at run-time,
+letting the kernel returning an error if it is not supported, than trying to
+guess at build-time what the end-user will have at run-time.
 
 ## What build time checks are needed/recommended?
-Since a common practice nowadays is to compile programs on older, more stable kernel
-versions. The is a chance that the lib-c used to compile the program does not define
-`IPPROTO_MPTCP`. However, it has no correlation with the ability of the system used
-to run the app to use MPTCP. To that end, it is recommended to define `IPPROTO_MPTCP`
-as chown [here](implementation.html#the-lib-c).
+Since a common practice nowadays is to compile source code on a different
+machine, potentially with an older kernel versions, it is recommended not to
+restrict MPTCP utilisation at build-time other than checking than the target is
+Linux.
 
-Regrading checking at compile time for MPTCP is not recommended since, again, the
-system used to compile may not be the same as at runtime.
+Note that it might be needed to manually define `IPPROTO_MPTCP`, because old
+libC versions might not have it. See the [Implementation Guide](implementation.html)
+for more details about that.
