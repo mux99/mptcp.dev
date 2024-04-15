@@ -1,7 +1,7 @@
 ---
-layout: page
-title: Implementation guide
-nav_order: 3
+layout: home
+title: Implementation guide (Devs)
+nav_order: 4
 nav_titles: true
 titles_max_depth: 2
 ---

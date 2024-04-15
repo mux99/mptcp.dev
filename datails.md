@@ -1,7 +1,7 @@
 ---
 layout: home
-title: Implementation details
-nav_order: 5
+title: Implementation details (Kernel)
+nav_order: 8
 nav_titles: false
 titles_max_depth: 2
 ---
