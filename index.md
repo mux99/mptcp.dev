@@ -1,6 +1,6 @@
 ---
 layout: home
-title: Home
+title: MPTCP
 nav_order: 1
 nav_titles: true
 titles_max_depth: 2
