@@ -5,78 +5,244 @@ nav_order: 2
 nav_titles: true
 titles_max_depth: 2
 ---
-## Enabling on linux systems
-run the following command:
+
+This setup page is specific to the Multipath TCP support in the Linux kernel.
+
+## Kernel version
+
+MPTCP support has debuted with the version 5.6. It has continued to evolve, and
+still evolving today. See the [ChangeLog](https://github.com/multipath-tcp/mptcp_net-next/wiki/#changelog)
+for more details.
+
+For this reason, we do recommend you to use a [recent kernel](https://www.kernel.org/),
+ideally the last stable version, or the last "long term support" (LTS) one.
+
+Note that the RedHat/CentOS kernels have a good support of MPTCP, where new
+features and bug fixes are regularly backported.
+
+
+## Enable MPTCP
+
+{: .new-title }
+> Info
+>
+> Most recent GNU/Linux distributions support MPTCP by default. It is very
+> likely MPTCP is already enabled, and you can skip this section.
+
+### Linux kernel build configuration
+
+The Linux kernel being used has to be compiled with `CONFIG_MPTCP=y` and
+`CONFIG_MPTCP_IPV6=y` options, and ideally `CONFIG_INET_MPTCP_DIAG=y/m`. If not,
+please report this to your GNU/Linux distribution: MPTCP in the kernel is light,
+and enabled in most main Linux distributions (Debian, Ubuntu, RedHat, Fedora,
+etc.), and other specific ones like Raspbian.
+
+{: .note}
+Note that `CONFIG_MPTCP_IPV6=y` requires `IPV6` to be inlined (`=y`), and not as
+a module (`=m`), but having `IPV6` inlined is recommended by NetDev maintainers
+anyway: today, it is very likely that IPv6 will be used, e.g. for the loopback
+address.
+
+### Enable the creation of MPTCP sockets
+
+If available, MPTCP should be enabled by default. If not, change this sysctl
+knob:
+
 ```bash
 sysctl net.mptcp.enabled=1
 ```
 
-## Force MPTCP
-Apps can be forces to use one of the following methods
-
-- [mptcpize](https://www.mankier.com/8/mptcpize)
-
-    `mptcpize run <app command>`
-    This works by modifying the behavior of the underlying lib-c
-
-    {: .note}
-    Some admins do not like this technique, that is why it is recommended to update
-    apps to support MPTCP natively.
-
-- [GODEBUG](https://go-review.googlesource.com/c/go/+/507375)
-
-    With GO, the lib-c is not used, so `mptcpize` will not work.
-    To force MPTCP the environment variable `GODEBUG=multipathtcp=1` can be used.
-
-- [eBPF](https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=ddba122428a7)
-
-- [systemtap](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/getting-started-with-multipath-tcp_configuring-and-managing-networking#preparing-rhel-to-enable-mptcp-support_getting-started-with-multipath-tcp)
+{: .note}
+Note that MPTCP can also be blocked by SELinux, eBPF, etc. Please check with
+your system administrators if it is the case.
 
 
+## Force applications to use MPTCP
 
+By default, applications will only use MPTCP if it has been explicitly
+requested when creating a [stream network socket](https://en.wikipedia.org/wiki/Network_socket)
+to communicate with the outside work. In other words, you likely have to enable
+an option in the app you want to use with MPTCP, or to force MPTCP by changing
+the behaviour of an app. The best is to have MPTCP supported [natively](implementation.html)
+by applications, so they know where MPTCP is being used, and they can act
+accordingly, e.g. force a fallback to TCP if MPTCP is not supported by the
+kernel, etc.
 
+Apps can be forced to use MPTCP with one of the following methods:
 
-## Making Use of Multiple Streams
-For the apps to be able to use multiple streams the kernel needs to be told what
-interfaces can be used to do so. Two steps are required to achieve this:
+- [mptcpize](https://www.mankier.com/8/mptcpize): internally, it uses the
+  [`LD_PRELOAD`](https://en.wikipedia.org/wiki/LD_PRELOAD) technique to force
+  creating `MPTCP` sockets, instead of a `TCP` ones. Only `MPTCP` sockets will
+  then be created, instead of `TCP`.
 
-- **Setting MPTCP Endpoints**
-  This operation tells MPTCP which interfaces on the system can be used as path by
-  mptcp. To set MPTCP endpoints, you use the `ip mptcp` command. There is basically
-  two cases:
-
-  Servers:
-  this is the option to use when you want distant hosts to create new subflow on that interface
-  ```sh
-  ip mptcp endpoint add <ip address> signal
+  ```bash
+mptcpize run <command>
+mptcpize enable <systemd unit>
   ```
 
-  Client:
-  this, on the other hand, tells MPTCP to use this interface to create new subflows.
-  ```sh
-  ip mptcp endpoint add <ip address> subflow
-  ```
-  [man page](https://man7.org/linux/man-pages/man8/ip-mptcp.8.html)
+- [GODEBUG](https://go-review.googlesource.com/c/go/+/507375): with GO, the libC
+  is not used, so `mptcpize` does not work. Since GoLang 1.21, it is possible to
+  force MPTCP by setting the environment variable `GODEBUG=multipathtcp=1`:
 
-- **Configuring Routing**
-  When MPTCP knows what interfaces it can use and how to use them, the system needs
-  to be told how to route packets for those interfaces. To achieve this, we will
-  create a new routing table per interface. We will use `ip route` and `ip rule`.
-
-  For each interface that will use MPTCP, run the following command (change the table number each time)
-  ```sh
-  ip rule add from <ip address> table <table number>
+  ```bash
+GODEBUG=multipathtcp=1 <command>
   ```
 
-  The we configure each table like so:
-  ```sh
-  ip route add <network ip>/<network mask> dev <interface name> scope link table <table number>
-  ip route add default via <default gateway> dev <interface name> table <table number>
-  ```
+- [eBPF](https://ebpf.io/what-is-ebpf/): since kernel v6.6, it is possible to
+  change the socket being created per cGroup. A small eBPF program -- e.g.
+  [mptcpify](https://elixir.bootlin.com/linux/latest/source/tools/testing/selftests/bpf/progs/mptcpify.c) --
+  can be used, see [this example](https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=ddba122428a7).
 
-  The last thing to do is to configure the default route for normal internet traffic:
-  ```sh
-  ip route add default scope global nexthop via <default gateway> dev <exit interface name>
-  ```
-  ip route [man page](https://man7.org/linux/man-pages/man8/ip-route.8.html)
-  ip rule [man page](https://man7.org/linux/man-pages/man8/ip-rule.8.html)
+- [SystemTap](https://sourceware.org/systemtap/) can also be used to modify the
+  `socket` system call. See this [documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/getting-started-with-multipath-tcp_configuring-and-managing-networking#preparing-rhel-to-enable-mptcp-support_getting-started-with-multipath-tcp)
+  for more details about that.
+
+
+## Using multiple IP addresses
+
+To be able to use multiple IP addresses on a host to create multiple *subflows*
+(paths), the networking stack of the kernel needs to be able to route the
+packets properly, and the MPTCP path-manager needs to know what IP addresses can
+be used.
+
+{: .new-title }
+> Info
+>
+> A server having only one network interface does not need to configure anything
+> else: the client will create additional subflows it wants to.
+>
+> Yet, it might be interesting to announce the additional IPv4/6 addresses: some
+> clients might be connected to some networks having only an IPv4 or an IPv6
+> address; plus IPv4 and IPv6 packets are often routed differently through some
+> networks, resulting in different latencies.
+
+### Routing configuration
+
+The system needs to know how to route packets from a specific IP address to the
+correct network interface.
+
+{: .note}
+Typically, a GNU/Linux distribution will be automatically configured to use one
+interface at a time, e.g. Ethernet or Wi-Fi. This results in having one or
+multiple default routes. If several network interfaces are connected, it is very
+likely to have multiple default routes with different priorities. It means: all
+the external traffic has to be routed through one interface.
+
+To be able to use multiple paths from different local IP addresses at the same
+time, it is then required to configure the system to route the traffic from a
+specific local IP address (e.g. the one of the Wi-Fi) through the correct
+interface, and not the default one. Such configuration can be automated with
+tools like [Network Manager](https://networkmanager.dev), but here, we will
+focus on the manual configuration, using
+[`ip route`](https://man7.org/linux/man-pages/man8/ip-route.8.html) and
+[`ip rule`](https://man7.org/linux/man-pages/man8/ip-rule.8.html) commands.
+
+For each (additional) interface that will be used with MPTCP, run the following
+commands with the correct IP address and a different table number:
+
+```sh
+ip rule add from <local interface IP address> table <table number>
+ip route add default via <default gateway IP> dev <interface name> table <table number>
+```
+
+This configuration might need to be done with both IPv4 and IPv6 addresses.
+
+#### Example
+
+On a system with 3 network interfaces:
+
+- Ethernet:
+  - IP Address: 10.1.1.2
+  - Gateway (next hop): 10.1.1.1
+
+- Wi-Fi:
+  - IP Address: 192.168.1.2
+  - Gateway (next hop): 192.168.1.1
+
+- Cellular:
+  - IP Address: 100.64.1.134
+  - Gateway (next hop): 100.64.1.133
+
+Where the Ethernet interface is the default one:
+
+```sh
+$ ip route show default
+default via 10.1.1.1 dev eth0 (...) metric 100
+default via 192.168.1.1 dev wlan0 (...) metric 600
+default via 100.64.1.133 dev usb0 (...) metric 1000
+```
+
+It is then required to configure the routing for the Wi-Fi and the cellular
+interface, not to have the traffic routed only through the Ethernet interface:
+
+```sh
+ip rule add from 192.168.1.2 table 42
+ip route add default via 192.168.1.1 dev wlan0 table 42
+
+ip rule add from 100.64.1.134 table 43
+ip route add default via 100.64.1.133 dev wlan0 table 43
+```
+
+### Path-Manager configuration
+
+With the default in-kernel MPTCP path-manager, the additional IP addresses need
+to be specified.
+
+This configuration can be automated with tools like
+[Network Manager](https://networkmanager.dev) -- in command lines, look for
+`mptcp-flags` in the [settings](https://networkmanager.dev/docs/api/latest/nm-settings-nmcli.html) --
+and [mptcpd](https://mptcpd.mptcp.dev), but here, we will focus on the manual
+configuration, using [`ip mptcp`](https://man7.org/linux/man-pages/man8/ip-mptcp.8.html)
+command.
+
+{: .note}
+With the userspace MPTCP path-manager -- `sysctl net.mptcp.pm_type=0` -- the
+configuration has to be done on the userspace daemon side.
+
+#### Endpoints
+
+MPTCP endpoints can be configured with
+
+```sh
+ip mptcp endpoint add <IP address> [ signal | subflow ] [ backup ] [ fullmesh ]
+```
+
+One of the following flags needs to be set:
+- `signal`: The endpoint will be announced to each peer via an MPTCP `ADD_ADDR`
+  sub-option. Typically, what a server would do.
+- `subflow`: The endpoint will be used to create an additional subflow using
+  the given source IP address. Typically, what a client would do.
+
+Optionally, the following flags can be set:
+- `backup`: Subflows created from this endpoint instructs the peers to only send
+  data on it when all non-backup subflows are unavailable.
+- `fullmesh`: The MPTCP path manager will try to create an additional subflow
+  for each known peer address, using this endpoint as the source IP address.
+
+The IP address is an IPv4 or IPv6 address.
+
+#### Limits
+
+It is also important to make sure the limits are high enough:
+
+```sh
+ip mptcp limits set [ subflows NR ] [ add_addr_accepted NR ]
+```
+
+`subflows` is the limit of created and accepted subflows (paths), and
+`add_addr_accepted` is the limit of accepted `ADD_ADDR` -- IP address
+notification from the other peer -- that will result in the creation of subflows.
+
+#### Example
+
+- Servers can announce extra IP addresses:
+```sh
+ip mptcp endpoint add 10.2.2.2 signal
+```
+
+- Clients can create additional subflows from a cellular interface, and flag
+  this subflow as "backup", to be used to carry data only if the main path is
+  unavailable:
+```sh
+ip mptcp endpoint add 100.64.1.134 subflow backup
+```

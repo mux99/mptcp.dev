@@ -33,7 +33,7 @@ In case MPTCP is not supported by the kernel or otherwise disabled, multiple `er
 ## Are you using MPTCP?
 A similar function to the following can be used. [source](https://github.com/multipath-tcp/mptcp_net-next/issues/294)
 
-more details in [#installation](setup.html)
+more details in [setup](setup.html)
 <details markdown="block">
 <summary>[click to see function]</summary>
 
@@ -62,7 +62,7 @@ bool socket_is_mptcp(int sockfd)
 ## Quick examples
 ### MPTCPize
 MPTCP comes with a tool called `mptcpize`, it can be used to start apps with MPTCP.
-It works by overwriting the underlying lib C. See hot to use it [here](setup.html#force-mptcp)
+It works by overwriting the underlying lib C. See hot to use it [here](setup.html#force-applications-to-use-mptcp)
 
 ### C
 ```c
@@ -100,7 +100,7 @@ with `sockopt`. They are aggregated in three structures:
 
 ```c
 //in the structure, they are grouped by wave of addition, meaning you can get away with only
-//verifying the offset of the last element in each group.  
+//verifying the offset of the last element in each group.
 struct mptcp_info {
 	__u8	mptcpi_subflows;
 	__u8	mptcpi_add_addr_signal;
