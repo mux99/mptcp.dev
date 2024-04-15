@@ -116,9 +116,19 @@ guess at build-time what the end-user will have at run-time.
 ## What build time checks are needed/recommended?
 Since a common practice nowadays is to compile source code on a different
 machine, potentially with an older kernel versions, it is recommended not to
-restrict MPTCP utilisation at build-time other than checking than the target is
+restrict MPTCP utilization at build-time other than checking than the target is
 Linux.
 
 Note that it might be needed to manually define `IPPROTO_MPTCP`, because old
 libC versions might not have it. See the [Implementation Guide](implementation.html)
 for more details about that.
+
+## <code>IPPROTO_MPTCP</code> is not defined
+Since a program is not always compiled on the system it run's on, it is normal,
+and even recommended to manually define `IPPROTO_MPTCP` if it was not already
+the case:
+```js
+#ifndef IPPROTO_MPTCP
+#define IPPROTO_MPTCP 262
+#endif
+```
