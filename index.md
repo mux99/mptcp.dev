@@ -19,14 +19,14 @@ another one.
 graph TD;
     subgraph MPTCP
         direction LR
-        C_1(<font size="7">fa:fa-mobile</font>)
-        S_1((<div style="display: inline-block; min-width: 60px"><font size="7">fa:fa-cloud</font></div>))
+        C_1(<div style="display: inline-block; min-width: 32px"><font size="7">fa:fa-mobile</font></div>)
+        S_1((<div style="display: inline-block; min-width: 55px"><font size="7">fa:fa-cloud</font></div>))
     end
 
     subgraph TCP
         direction LR
-        C_2(<font size="7">fa:fa-mobile</font>)
-        S_2((<div style="display: inline-block; min-width: 60px"><font size="7">fa:fa-cloud</font></div>))
+        C_2(<div style="display: inline-block; min-width: 32px"><font size="7">fa:fa-mobile</font></div>)
+        S_2((<div style="display: inline-block; min-width: 55px"><font size="7">fa:fa-cloud</font></div>))
     end
 
     C_1 <== "5G" ==> S_1
@@ -61,7 +61,7 @@ This behavior is made possible by two internal components:
 
   ```mermaid
   graph LR;
-      C_1(<font size="7">fa:fa-mobile</font>)
+      C_1(<div style="display: inline-block; min-width: 35px"><font size="7">fa:fa-mobile</font></div>)
       S_1((<div style="display: inline-block; min-width: 60px"><font size="7">fa:fa-cloud</font></div>))
 
       C_1 -. "Potential subflow" -.- S_1
@@ -87,16 +87,16 @@ where different rules can be applied by connections.
 
   ```mermaid
   graph LR;
-      A_2(<div style="display: inline-block; min-width: 60px"><font size="7">fa:fa-user</font></div>)
+      A_2(<div style="display: inline-block; min-width: 40px"><font size="7">fa:fa-user</font></div>)
 
       PS{Packet<br />Scheduler}
 
       I_21(subflow 1)
       I_22(subflow 2)
 
-      A_2 == "fa:fa-box fa:fa-box fa:fa-box" ==> PS
-      PS -- "fa:fa-box fa:fa-box" --> I_21
-      PS -- "fa:fa-box" --> I_22
+      A_2 == "<div style='display: inline-block; min-width: 50px'>fa:fa-box fa:fa-box fa:fa-box</div>" ==> PS
+      PS -- "<div style='display: inline-block; min-width: 32px'>fa:fa-box fa:fa-box</div>" --> I_21
+      PS -- "<div style='display: inline-block; min-width: 14px'>fa:fa-box</div>" --> I_22
       PS ~~~|"Packets distribution between subflows"| PS
   ```
 
