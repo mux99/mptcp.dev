@@ -19,14 +19,14 @@ another one.
 graph TD;
     subgraph MPTCP
         direction LR
-        C_1(<font size="20px">fa:fa-mobile</font>)
-        S_1((<font size="20px">fa:fa-cloud</font>))
+        C_1(<font size="7">fa:fa-mobile</font>)
+        S_1((<font size="7">fa:fa-cloud</font>))
     end
 
     subgraph TCP
         direction LR
-        C_2(<font size="20px">fa:fa-mobile</font>)
-        S_2((<font size="20px">fa:fa-cloud</font>))
+        C_2(<font size="7">fa:fa-mobile</font>)
+        S_2((<font size="7">fa:fa-cloud</font>))
     end
 
     C_1 <== "5G" ==> S_1
@@ -61,8 +61,8 @@ This behavior is made possible by two internal components:
 
   ```mermaid
   graph LR;
-      C_1(<font size="20px">fa:fa-mobile</font>)
-      S_1((<font size="20px">fa:fa-cloud</font>))
+      C_1(<font size="7">fa:fa-mobile</font>)
+      S_1((<font size="7">fa:fa-cloud</font>))
 
       C_1 -. "Potential subflow" -.- S_1
       C_1 <== "Initial subflow" ==> S_1
@@ -87,7 +87,7 @@ where different rules can be applied by connections.
 
   ```mermaid
   graph LR;
-      A_2(<font size="20px">fa:fa-user</font>)
+      A_2(<font size="7">fa:fa-user</font>)
 
       PS{Packet<br />Scheduler}
 
