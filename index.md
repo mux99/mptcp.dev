@@ -11,8 +11,9 @@ extension to the standard [TCP](https://en.wikipedia.org/wiki/Transmission_Contr
 described in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows
 a device to make use of multiple interfaces at once to send and receive TCP
 packets over a single MPTCP connection. MPTCP can aggregate the bandwidth of
-multiple interfaces, it also allows a fail-over if one path is down, and the
-traffic is seamlessly reinjected to another one.
+multiple interfaces or prefer the one with lowest latency, it also allows a
+fail-over if one path is down, and the traffic is seamlessly reinjected to
+another one.
 
 ```mermaid
 graph TD;
@@ -48,14 +49,15 @@ host to be able to detect the use of MPTCP, a new field is added to the TCP
 *option* field of the underlying TCP *subflow*. This field contains, amongst
 other things, `MP_CAPABLE` that tells the other host to use MPTCP if it is
 supported. If the distant host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox)
-in between does not support it, the response `SYN+ACK` packet will not contain
+in between does not support it, the returned `SYN+ACK` packet will not contain
 the MPTCP options in the TCP *option* field. In that case, the connection will
 be "downgraded" to plain TCP, and it will continue with a single path.
 
 This behavior is made possible by two internal components:
 * **Path Manager**: it is managing *subflows*, from creation to deletion, but
   also the addresses announcements. Typically, it is the client side that
-  initiates subflows, and the server side that announces additional addresses.
+  initiates subflows, and the server side that announces additional addresses
+  via the `ADD_ADDR` and `REMOVE_ADDR` options.
 
   ```mermaid
   graph LR;

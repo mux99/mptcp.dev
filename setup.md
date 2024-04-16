@@ -78,9 +78,10 @@ mptcpize run <command>
 mptcpize enable <systemd unit>
   ```
 
-- [GODEBUG](https://go-review.googlesource.com/c/go/+/507375): with GO, the libC
-  is not used, so `mptcpize` does not work. Since GoLang 1.21, it is possible to
-  force MPTCP by setting the environment variable `GODEBUG=multipathtcp=1`:
+- [GODEBUG](https://go-review.googlesource.com/c/go/+/507375): For applications
+  written in GO, the libC is not used, so `mptcpize` does not work. Since GoLang
+  1.21, it is possible to force MPTCP by setting the environment variable
+  `GODEBUG=multipathtcp=1`:
 
   ```bash
 GODEBUG=multipathtcp=1 <command>
