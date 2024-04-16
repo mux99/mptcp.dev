@@ -60,15 +60,15 @@ not compatible with KTLS yet.
 <details markdown="block">
 <summary>MPTCP is supported in the official Linux kernel from version 5.6. Any
 applications can [easily use it](implementation.html). The adoption of MPTCP
-extends beyond to various platforms including iOS. But... </summary>
+extends beyond to various platforms including macOS. But... </summary>
 
-The usage of MPTCP on IOS is somehow restricted:
+The usage of MPTCP on macOS is somehow restricted:
 - It is easy only when applications use their
   [SDK](https://developer.apple.com/documentation/foundation/nsurlsessionconfiguration/improving_network_reliability_using_multipath_tcp)
 - If not, it looks like applications need to use private libraries (we are not
   even sure the headers are available) with specific functions to create sockets
   that are apparently not documented, e.g.
-  [OpenSSH for IOS](https://github.com/apple-oss-distributions/OpenSSH/blob/main/openssh/sshconnect.c#L487).
+  [OpenSSH for macOS](https://github.com/apple-oss-distributions/OpenSSH/blob/main/openssh/sshconnect.c#L487).
   (This might change in the future.)
 
 On FreeBSD, there was an ongoing implementation, but that was years ago, and not
