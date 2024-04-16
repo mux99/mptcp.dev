@@ -10,6 +10,8 @@ titles_max_depth: 2
 MPTCP aims to maintain the same level of security as traditional TCP, with
 specific mechanisms to counter common network attacks. Find out more in the
 [RFC 8684](https://datatracker.ietf.org/doc/html/rfc8684#name-security-considerations).
+To be more secure than TCP, some modifications of the protocol would be needed,
+e.g. [MPTCPsec](https://inl.info.ucl.ac.be/system/files/infocom_mptpcsec.pdf).
 
 ## Why & when should MPTCP be enabled by default?
 <details markdown="block">
