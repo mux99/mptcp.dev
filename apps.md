@@ -1,6 +1,6 @@
 ---
 layout: home
-title: Supported apps
+title: Apps supporting MPTCP
 nav_order: 7
 nav_titles: true
 titles_max_depth: 2

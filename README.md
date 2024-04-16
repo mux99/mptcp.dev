@@ -15,7 +15,7 @@ website for those who want to contribute.
   app on Linux.
 - `mptcp-info` contains info on how app devs can retrieve MPTCP info.
 - `questions`, a FAQ.
-- `supported`, the list of currently supported apps.
+- `apps`, the list of currently apps supporting MPTCP natively.
 - `details` contains detailed explanations of the kernel implementation.
 
 ## Front matter
