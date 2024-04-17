@@ -100,9 +100,7 @@ GODEBUG=multipathtcp=1 <command>
 ## Using multiple IP addresses
 
 To be able to use multiple IP addresses on a host to create multiple *subflows*
-(paths), the networking stack of the kernel needs to be able to route the
-packets properly, and the MPTCP path-manager needs to know what IP addresses can
-be used.
+(paths), the MPTCP path-manager needs to know what IP addresses can be used.
 
 {: .info}
 > A server having only one network interface does not need to configure anything
@@ -113,17 +111,91 @@ be used.
 > address; plus IPv4 and IPv6 packets are often routed differently through some
 > networks, resulting in different latencies.
 
-### Routing configuration
+### Path-Manager configuration
+
+With the default in-kernel MPTCP path-manager, the additional IP addresses need
+to be specified.
+
+This configuration can be automated with tools like
+[Network Manager](https://networkmanager.dev) -- in command lines, look for
+`mptcp-flags` in the [settings](https://networkmanager.dev/docs/api/latest/nm-settings-nmcli.html) --
+and [mptcpd](https://mptcpd.mptcp.dev), but here, the focus is done on the manual
+configuration, using [`ip mptcp`](https://man7.org/linux/man-pages/man8/ip-mptcp.8.html)
+command.
+
+{: .note}
+With the userspace MPTCP path-manager -- `sysctl net.mptcp.pm_type=0` -- the
+configuration has to be done on the userspace daemon side.
+
+#### Endpoints
+
+MPTCP endpoints can be configured with
+
+```sh
+ip mptcp endpoint add <IP address> dev <interface> [ signal | subflow ] [ backup ] [ fullmesh ]
+```
+
+{: .warning}
+It is important to specify the network interface linked to the address by adding
+`dev <interface>`. If not, the routing will probably not be done properly, and
+will require manual configuration, see below:
+[Manual Routing Configuration](#manual-routing-configuration).
+
+One of the following flags needs to be set:
+- `signal`: The endpoint will be announced to each peer via an MPTCP `ADD_ADDR`
+  sub-option. Typically, what a server would do.
+- `subflow`: The endpoint will be used to create an additional subflow using
+  the given source IP address. Typically, what a client would do.
+
+Optionally, the following flags can be set:
+- `backup`: Subflows created from this endpoint instructs the peers to only send
+  data on it when all non-backup subflows are unavailable.
+- `fullmesh`: The MPTCP path manager will try to create an additional subflow
+  for each known peer address, using this endpoint as the source IP address.
+
+The IP address is an IPv4 or IPv6 address.
+
+#### Limits
+
+It is also important to make sure the limits are high enough:
+
+```sh
+ip mptcp limits set [ subflows NR ] [ add_addr_accepted NR ]
+```
+
+`subflows` is the limit of created and accepted subflows (paths), and
+`add_addr_accepted` is the limit of accepted `ADD_ADDR` -- IP address
+notification from the other peer -- that will result in the creation of subflows.
+
+#### Example
+
+- Servers can announce extra IP addresses:
+```sh
+ip mptcp endpoint add 10.2.2.2 signal
+```
+
+- Clients can create additional subflows from a cellular interface, and flag
+  this subflow as "backup", to be used to carry data only if the main path is
+  unavailable:
+```sh
+ip mptcp endpoint add 100.64.1.134 subflow backup
+```
+
+### Manual routing configuration
+
+<details markdown="block">
+<summary>Only if MPTCP endpoints have <b>not</b> been configured with a network interface </summary>
 
 The system needs to know how to route packets from a specific IP address to the
 correct network interface.
 
-{: .note}
-Typically, a GNU/Linux distribution will be automatically configured to use one
-interface at a time, e.g. Ethernet or Wi-Fi. This results in having one or
-multiple default routes. If several network interfaces are connected, it is very
-likely to have multiple default routes with different priorities. It means: all
-the external traffic has to be routed through one interface.
+{: .warning}
+This manual routing configuration should not be required if the MPTCP endpoints
+have been configured with a network interface `dev <interface>`, and if the
+GNU/Linux distribution has automatically configured default route attached to
+each network interface. To verify the latter, please check if the following
+command `ip route show default` lists all the IPs you want to use with a `dev`
+and a `src`.
 
 To be able to use multiple paths from different local IP addresses at the same
 time, it is then required to configure the system to route the traffic from a
@@ -179,67 +251,4 @@ ip route add default via 192.168.1.1 dev wlan0 table 42
 ip rule add from 100.64.1.134 table 43
 ip route add default via 100.64.1.133 dev wlan0 table 43
 ```
-
-### Path-Manager configuration
-
-With the default in-kernel MPTCP path-manager, the additional IP addresses need
-to be specified.
-
-This configuration can be automated with tools like
-[Network Manager](https://networkmanager.dev) -- in command lines, look for
-`mptcp-flags` in the [settings](https://networkmanager.dev/docs/api/latest/nm-settings-nmcli.html) --
-and [mptcpd](https://mptcpd.mptcp.dev), but here, we will focus on the manual
-configuration, using [`ip mptcp`](https://man7.org/linux/man-pages/man8/ip-mptcp.8.html)
-command.
-
-{: .note}
-With the userspace MPTCP path-manager -- `sysctl net.mptcp.pm_type=0` -- the
-configuration has to be done on the userspace daemon side.
-
-#### Endpoints
-
-MPTCP endpoints can be configured with
-
-```sh
-ip mptcp endpoint add <IP address> [ signal | subflow ] [ backup ] [ fullmesh ]
-```
-
-One of the following flags needs to be set:
-- `signal`: The endpoint will be announced to each peer via an MPTCP `ADD_ADDR`
-  sub-option. Typically, what a server would do.
-- `subflow`: The endpoint will be used to create an additional subflow using
-  the given source IP address. Typically, what a client would do.
-
-Optionally, the following flags can be set:
-- `backup`: Subflows created from this endpoint instructs the peers to only send
-  data on it when all non-backup subflows are unavailable.
-- `fullmesh`: The MPTCP path manager will try to create an additional subflow
-  for each known peer address, using this endpoint as the source IP address.
-
-The IP address is an IPv4 or IPv6 address.
-
-#### Limits
-
-It is also important to make sure the limits are high enough:
-
-```sh
-ip mptcp limits set [ subflows NR ] [ add_addr_accepted NR ]
-```
-
-`subflows` is the limit of created and accepted subflows (paths), and
-`add_addr_accepted` is the limit of accepted `ADD_ADDR` -- IP address
-notification from the other peer -- that will result in the creation of subflows.
-
-#### Example
-
-- Servers can announce extra IP addresses:
-```sh
-ip mptcp endpoint add 10.2.2.2 signal
-```
-
-- Clients can create additional subflows from a cellular interface, and flag
-  this subflow as "backup", to be used to carry data only if the main path is
-  unavailable:
-```sh
-ip mptcp endpoint add 100.64.1.134 subflow backup
-```
+</details> {: .ctsm}
