@@ -268,3 +268,42 @@ differences:
 into account the initial one. `mptcpi_subflows_total` and `num_subflows` do
 include the initial one if it is still attached to the MPTCP connection. It is
 then recommended to use these last two.
+
+## Check for TCP fallback
+
+Since kernel v5.16, the returned error from `getsockopt(MPTCP_INFO)` can be
+used to check if an MPTCP connection fell back to TCP. If this `getsockopt()`
+call returns `-1`, and `errno` is set to `EOPNOTSUPP` (v4) or `ENOPROTOOPT`
+ (v6), it means the MPTCP connection has fallen back to TCP at some points.
+
+<details markdown="block">
+<summary>Example in C </summary>
+
+```c
+#define MPTCP_INFO 1
+bool socket_is_mptcp(int sockfd)
+{
+    socklen_t len = 0;
+    /* We should get EOPNOTSUPP (or ENOPROTOOPT in v6) in case of fallback */
+    if (getsockopt(sockfd, SOL_MPTCP, MPTCP_INFO, NULL, &len) < 0) {
+        if (errno != EOPNOTSUPP && errno != ENOPROTOOPT)
+            perror("getsockopt(MPTCP_INFO)");
+        return false;
+    }
+    /* no error: MPTCP is supported */
+    return true;
+}
+```
+</details> {: .ctsm}
+
+<details markdown="block">
+<summary>Example in Go </summary>
+
+```go
+d := &Dialer{}
+d.SetMultipathTCP(true)
+c, err := d.Dial("tcp", addr) // check for error + defer c.Close()
+tcp, ok := c.(*TCPConn) // should not fail
+mptcp, err := tcp.MultipathTCP() // 'mptcp' is a boolean
+```
+</details> {: .ctsm}
