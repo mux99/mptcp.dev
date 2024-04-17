@@ -271,21 +271,46 @@ then recommended to use these last two.
 
 ## Check for TCP fallback
 
-Since kernel v5.16, the returned error from `getsockopt(MPTCP_INFO)` can be
-used to check if an MPTCP connection fell back to TCP. If this `getsockopt()`
-call returns `-1`, and `errno` is set to `EOPNOTSUPP` (v4) or `ENOPROTOOPT`
- (v6), it means the MPTCP connection has fallen back to TCP at some points.
+Since kernel v5.16, the `getsockopt(MPTCP_INFO)` can be used to check if an
+MPTCP connection fell back to TCP. If this `getsockopt()` call returns `-1`,
+and `errno` is set to `EOPNOTSUPP` (v4) or `ENOPROTOOPT` (v6), it means the
+MPTCP connection has fallen back to TCP at some points. In case of a client
+(`connect()`), or to check if a connection has later fell back to TCP (rare), it
+is also required to check if the `mptcpi_flags` field from the `mptcp_info`
+structure has the `MPTCP_INFO_FLAG_FALLBACK` bit (`0x1`) set.
 
 <details markdown="block">
-<summary>Example in C </summary>
+<summary>Example in C (<b>client or server</b>) </summary>
 
 ```c
 #define MPTCP_INFO 1
+#define MPTCP_INFO_FLAG_FALLBACK 1
 bool socket_is_mptcp(int sockfd)
+{
+    socklen_t len = sizeof(struct mptcp_info);
+    struct mptcp_info info = { 0 };
+
+    /* We should get EOPNOTSUPP (or ENOPROTOOPT in v6) in case of fallback */
+    if (getsockopt(sockfd, SOL_MPTCP, MPTCP_INFO, &info, &len) < 0) {
+        if (errno != EOPNOTSUPP && errno != ENOPROTOOPT)
+            perror("getsockopt(MPTCP_INFO)");
+        return false;
+    }
+    return (info.mptcpi_flags & MPTCP_INFO_FLAG_FALLBACK) == 0;
+}
+```
+</details> {: .ctsm}
+
+<details markdown="block">
+<summary>Example in C (<b>server only</b>) </summary>
+
+```c
+#define MPTCP_INFO 1
+bool socket_is_mptcp(int accept_fd)
 {
     socklen_t len = 0;
     /* We should get EOPNOTSUPP (or ENOPROTOOPT in v6) in case of fallback */
-    if (getsockopt(sockfd, SOL_MPTCP, MPTCP_INFO, NULL, &len) < 0) {
+    if (getsockopt(accept_fd, SOL_MPTCP, MPTCP_INFO, NULL, &len) < 0) {
         if (errno != EOPNOTSUPP && errno != ENOPROTOOPT)
             perror("getsockopt(MPTCP_INFO)");
         return false;
