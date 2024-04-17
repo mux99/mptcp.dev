@@ -275,9 +275,10 @@ Since kernel v5.16, the `getsockopt(MPTCP_INFO)` can be used to check if an
 MPTCP connection fell back to TCP. If this `getsockopt()` call returns `-1`,
 and `errno` is set to `EOPNOTSUPP` (v4) or `ENOPROTOOPT` (v6), it means the
 MPTCP connection has fallen back to TCP at some points. In case of a client
-(`connect()`), or to check if a connection has later fell back to TCP (rare), it
-is also required to check if the `mptcpi_flags` field from the `mptcp_info`
-structure has the `MPTCP_INFO_FLAG_FALLBACK` bit (`0x1`) set.
+(`connect()`), or for a server to check if an established connection has later
+fell back to TCP (should be rare), it is also required to check if the
+`mptcpi_flags` field from the `mptcp_info` structure has the
+`MPTCP_INFO_FLAG_FALLBACK` bit (`0x1`) set.
 
 <details markdown="block">
 <summary>Example in C (<b>client or server</b>) </summary>
@@ -332,3 +333,7 @@ tcp, ok := c.(*TCPConn) // should not fail
 mptcp, err := tcp.MultipathTCP() // 'mptcp' is a boolean
 ```
 </details> {: .ctsm}
+
+For kernels older than v5.16, it is possible to look at the protocol with
+`getsockopt(SOL_SOCKET, SO_PROTOCOL)`, but this works only for the server side,
+to see if the client asked to use MPTCP.
