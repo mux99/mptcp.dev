@@ -1,4 +1,4 @@
-# Multipath TCP for Linux
+# mptcp.dev website
 
 This README is meant as a guide on the structure and particularities of this
 website for those who want to contribute.

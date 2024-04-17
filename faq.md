@@ -96,6 +96,15 @@ Applications might have more configuration options to be able to select the
 different paths to use, and the technique to use to data over the different
 paths.
 
+## MPTCPv0 vs. MPTCPv1
+There are two different versions of the protocol:
+[RFC 6824](https://datatracker.ietf.org/doc/html/rfc6824) (MPTCPv0) and
+[RFC 8684](https://datatracker.ietf.org/doc/html/rfc8684) (MPTCPv1), replacing
+the previous one. The upstream Linux kernel only supports the v1. A previous
+[out-of-tree kernel](https://github.com/multipath-tcp/mptcp) supported both the
+v0 and the v1, but it is now recommended to use the
+[upstream](https://github.com/multipath-tcp/mptcp_net-next/) version instead.
+
 ## What about middleboxes?
 MPTCP is meticulously designed to ensure fallback to standard TCP when necessary.
 This ensures uninterrupted connectivity amidst the presence of NATs and

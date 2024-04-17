@@ -1,6 +1,6 @@
 ---
 layout: home
-title: Retrieving MPTCP info (Devs)
+title: MPTCP info (Devs)
 nav_order: 5
 nav_titles: true
 titles_max_depth: 2

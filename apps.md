@@ -35,7 +35,7 @@ can be forced to use it by following instructions from
 | --- | --- | --- |
 | [iperf3-darwin](https://software.es.net/iperf/) | [11.0+](https://developer.apple.com/documentation/foundation/nsurlsessionmultipathservicetype?language=objc) | `--apple-multipathsvc` |
 | SSH | [OpenSSH-281.40.2](https://github.com/apple-oss-distributions/OpenSSH) | `applemultipath` option |
-| [Shellfish](https://secureshellfish.app) | ? | `MPTCP` option |
+| [Shellfish](https://secureshellfish.app) | ? | Settings / Advanced / 🌍 Multipath TCP |
 
 ## Add native MPTCP support
 
