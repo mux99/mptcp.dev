@@ -280,22 +280,24 @@ fell back to TCP (should be rare), it is also required to check if the
 `mptcpi_flags` field from the `mptcp_info` structure has the
 `MPTCP_INFO_FLAG_FALLBACK` bit (`0x1`) set.
 
+For kernels older than v5.16, it is possible to look at the protocol with
+`getsockopt(SOL_SOCKET, SO_PROTOCOL)`, but this only works for the server side
+(`accept()`), and only to see if the client asked to use MPTCP.
+
 <details markdown="block">
-<summary>Example in C (<b>client or server</b>) </summary>
+<summary>Example in C (<b>client only</b>) </summary>
 
 ```c
 #define MPTCP_INFO 1
 #define MPTCP_INFO_FLAG_FALLBACK 1
-bool socket_is_mptcp(int sockfd)
+bool socket_is_mptcp(int client_fd)
 {
     socklen_t len = sizeof(struct mptcp_info);
     struct mptcp_info info = { 0 };
 
-    /* We should get EOPNOTSUPP (or ENOPROTOOPT in v6) in case of fallback */
-    if (getsockopt(sockfd, SOL_MPTCP, MPTCP_INFO, &info, &len) < 0) {
-        if (errno != EOPNOTSUPP && errno != ENOPROTOOPT)
-            perror("getsockopt(MPTCP_INFO)");
-        return false;
+    if (getsockopt(client_fd, SOL_MPTCP, MPTCP_INFO, &info, &len) < 0) {
+        perror("kernel < v5.16: we cannot tell (workaround: use NetLink or ss -Mi)");
+        return true;
     }
     return (info.mptcpi_flags & MPTCP_INFO_FLAG_FALLBACK) == 0;
 }
@@ -303,21 +305,45 @@ bool socket_is_mptcp(int sockfd)
 </details> {: .ctsm}
 
 <details markdown="block">
-<summary>Example in C (<b>server only</b>) </summary>
+<summary>Example in C (<b>server only</b>: full solution) </summary>
 
 ```c
 #define MPTCP_INFO 1
+#define MPTCP_INFO_FLAG_FALLBACK 1
 bool socket_is_mptcp(int accept_fd)
 {
-    socklen_t len = 0;
-    /* We should get EOPNOTSUPP (or ENOPROTOOPT in v6) in case of fallback */
-    if (getsockopt(accept_fd, SOL_MPTCP, MPTCP_INFO, NULL, &len) < 0) {
+    socklen_t len = sizeof(struct mptcp_info);
+    struct mptcp_info info = { 0 };
+
+    /* kernel < 5.16 will always fail with errno set to EOPNOTSUPP (v4) or ENOPROTOOPT (v6) */
+    if (kernel_version_lower(5, 16))
+        return true; /* This method cannot be used: check the next example */
+
+    if (getsockopt(accept_fd, SOL_MPTCP, MPTCP_INFO, &info, &len) < 0) {
         if (errno != EOPNOTSUPP && errno != ENOPROTOOPT)
-            perror("getsockopt(MPTCP_INFO)");
-        return false;
+            perror("getsockopt(MPTCP_INFO)"); /* Should not happen */
+        return false; /* The client didn't ask to use MPTCP */
     }
-    /* no error: MPTCP is supported */
-    return true;
+    /* The connection has been established in MPTCP, check for fallback later (rare) */
+    return (info.mptcpi_flags & MPTCP_INFO_FLAG_FALLBACK) == 0;
+}
+```
+</details> {: .ctsm}
+
+<details markdown="block">
+<summary>Example in C (<b>server only</b>: MPTCP requested?) </summary>
+
+```c
+bool client_requested_mptcp(int accept_fd)
+{
+    socklen_t len = 0;
+    int protocol;
+
+    if (getsockopt(accept_fd, SOL_SOCKET, SO_PROTOCOL, &protocol, &len) < 0) {
+        perror("getsockopt(SO_PROTOCOL)");
+        return true; /* cannot tell */
+    }
+    return protocol == IPPROTO_MPTCP; /* Always true on 'connect' and 'listen' sockets */
 }
 ```
 </details> {: .ctsm}
@@ -333,7 +359,3 @@ tcp, ok := c.(*TCPConn) // should not fail
 mptcp, err := tcp.MultipathTCP() // 'mptcp' is a boolean
 ```
 </details> {: .ctsm}
-
-For kernels older than v5.16, it is possible to look at the protocol with
-`getsockopt(SOL_SOCKET, SO_PROTOCOL)`, but this works only for the server side,
-to see if the client asked to use MPTCP.
