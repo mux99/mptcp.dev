@@ -280,12 +280,21 @@ fell back to TCP (should be rare), it is also required to check if the
 `mptcpi_flags` field from the `mptcp_info` structure has the
 `MPTCP_INFO_FLAG_FALLBACK` bit (`0x1`) set.
 
-For kernels older than v5.16, it is possible to look at the protocol with
-`getsockopt(SOL_SOCKET, SO_PROTOCOL)`, but this only works for the server side
-(`accept()`), and only to see if the client asked to use MPTCP.
+{: .warning}
+On kernels < v5.16, `getsockopt(MPTCP_INFO)` will always fail, and `errno` will
+also be set to `EOPNOTSUPP` (v4) or `ENOPROTOOPT` (v6). Do not use this method
+on older kernels then!
+
+On the server side, it is possible to look at the protocol of the `accept`ed
+sockets with `getsockopt(SO_PROTOCOL)`: if the client requested to use MPTCP,
+the protocol will be set to `IPPROTO_MPTCP`. This can be used on kernels < 5.16
+too.
 
 <details markdown="block">
 <summary>Example in C (<b>client only</b>) </summary>
+
+{: .warning}
+**Client only**: It requires **kernel >= 5.16**
 
 ```c
 #define MPTCP_INFO 1
@@ -305,7 +314,33 @@ bool socket_is_mptcp(int client_fd)
 </details> {: .ctsm}
 
 <details markdown="block">
+<summary>Example in C (<b>server only</b>: MPTCP requested?) </summary>
+
+{: .warning}
+**Server only**: it **only** checks if the client requested to use MPTCP
+
+```c
+bool client_requested_mptcp(int accept_fd)
+{
+    socklen_t len = 0;
+    int protocol;
+
+    if (getsockopt(accept_fd, SOL_SOCKET, SO_PROTOCOL, &protocol, &len) < 0) {
+        perror("getsockopt(SO_PROTOCOL)");
+        return true; /* cannot tell */
+    }
+    return protocol == IPPROTO_MPTCP; /* Always true on 'connect' and 'listen' sockets */
+}
+```
+</details> {: .ctsm}
+
+<details markdown="block">
 <summary>Example in C (<b>server only</b>: full solution) </summary>
+
+{: .warning}
+**Server only**: It requires **kernel >= 5.16**, it also checks for fallback
+that would have happened after the establishment of the connection (should be
+rare)
 
 ```c
 #define MPTCP_INFO 1
@@ -331,26 +366,9 @@ bool socket_is_mptcp(int accept_fd)
 </details> {: .ctsm}
 
 <details markdown="block">
-<summary>Example in C (<b>server only</b>: MPTCP requested?) </summary>
-
-```c
-bool client_requested_mptcp(int accept_fd)
-{
-    socklen_t len = 0;
-    int protocol;
-
-    if (getsockopt(accept_fd, SOL_SOCKET, SO_PROTOCOL, &protocol, &len) < 0) {
-        perror("getsockopt(SO_PROTOCOL)");
-        return true; /* cannot tell */
-    }
-    return protocol == IPPROTO_MPTCP; /* Always true on 'connect' and 'listen' sockets */
-}
-```
-</details> {: .ctsm}
-
-<details markdown="block">
 <summary>Example in Go </summary>
-
+Simply call [`MultipathTCP()`](https://pkg.go.dev/net#TCPConn.MultipathTCP) on
+the `TCPConn`.
 ```go
 d := &Dialer{}
 d.SetMultipathTCP(true)
