@@ -7,13 +7,14 @@ titles_max_depth: 2
 ---
 
 Multipath TCP or [MPTCP](https://en.wikipedia.org/wiki/Multipath_TCP) is an
-extension to the standard [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)
-and is described in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows
+extension to the standard
+[TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol) and is
+described in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows
 a device to make use of multiple interfaces at once to send and receive TCP
 packets over a single MPTCP connection. MPTCP can aggregate the bandwidth of
 multiple interfaces or prefer the one with lowest latency, it also allows a
-fail-over if one path is down, and the traffic is seamlessly reinjected on
-other paths.
+fail-over if one path is down, and the traffic is seamlessly reinjected on other
+paths.
 
 ```mermaid
 graph TD;
@@ -47,17 +48,19 @@ a regular TCP connection that is used to transmit data through one interface.
 Additional *subflows* can be negotiated later between the hosts. For the remote
 host to be able to detect the use of MPTCP, a new field is added to the TCP
 *option* field of the underlying TCP *subflow*. This field contains, amongst
-other things, a `MP_CAPABLE` option that tells the other host to use MPTCP if it is
-supported. If the remote host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox)
-in between does not support it, the returned `SYN+ACK` packet will not contain
-MPTCP options in the TCP *option* field. In that case, the connection will
-be "downgraded" to plain TCP, and it will continue with a single path.
+other things, a `MP_CAPABLE` option that tells the other host to use MPTCP if it
+is supported. If the remote host or any
+[middlebox](https://en.wikipedia.org/wiki/Middlebox) in between does not support
+it, the returned `SYN+ACK` packet will not contain MPTCP options in the TCP
+*option* field. In that case, the connection will be "downgraded" to plain TCP,
+and it will continue with a single path.
 
 This behavior is made possible by two internal components:
-* **Path Manager**: Manages *subflows* from creation to deletion, and
-  also address announcements. Typically, it is the client side that
-  initiates subflows, and the server side that announces additional addresses
-  via the `ADD_ADDR` and `REMOVE_ADDR` options.
+
+* **Path Manager**: Manages *subflows* from creation to deletion, and also
+  address announcements. Typically, it is the client side that initiates
+  subflows, and the server side that announces additional addresses via the
+  `ADD_ADDR` and `REMOVE_ADDR` options.
 
   ```mermaid
   graph LR;
@@ -80,10 +83,10 @@ all the connections (see: `ip mptcp`) ; and the userspace one (type `1`),
 controlled by a userspace daemon (i.e. [`mptcpd`](https://mptcpd.mptcp.dev/))
 where different rules can be applied for each connection.
 
-* **Packet Scheduler**: In charge of selecting which available
-  *subflow(s)* to use to send the next data packet. It can decide to
-  maximize the use of the available bandwidth, only to pick the path with the
-  lower latency, or any other policy depending on the configuration.
+* **Packet Scheduler**: In charge of selecting which available *subflow(s)* to
+  use to send the next data packet. It can decide to maximize the use of the
+  available bandwidth, only to pick the path with the lower latency, or any
+  other policy depending on the configuration.
 
   ```mermaid
   graph LR;
@@ -101,19 +104,20 @@ where different rules can be applied for each connection.
   ```
 
 {: .note}
-As of Linux v6.8, there is only one packet scheduler, controlled by sysctl
-knobs in `net.mptcp`.
+As of Linux v6.8, there is only one packet scheduler, controlled by sysctl knobs
+in `net.mptcp`.
 
 ## Features
 
 As of Linux v6.10, major features of MPTCP include:
 
-* Support of the [`IPPROTO_MPTCP`](implementation.html) protocol in `socket()` system calls.
+* Support of the [`IPPROTO_MPTCP`](implementation.html) protocol in `socket()`
+  system calls.
 * Fallback from MPTCP to TCP if the peer or a middlebox do not support MPTCP.
 * Path management using either an in-kernel or userspace path manager.
 * Socket options that are commonly used with TCP sockets.
-* Debug features including MIB counters, diag support (used by the `ss` command),
-  and tracepoints.
+* Debug features including MIB counters, diag support (used by the `ss`
+  command), and tracepoints.
 
 See the
 [ChangeLog](https://github.com/multipath-tcp/mptcp_net-next/wiki/#changelog)

@@ -19,7 +19,8 @@ options are: `ss -Mani`.
 - `M`, MPTCP sockets
 - `a`, display all socket not just "established" ones
 - `n`, prevent the port number to protocol conversion
-- `i`, connection info matching that from TCP_INFO, MPTCP_INFO, etc.
+- `i`, connection info matching that from Netlink Diag interface: `TCP_INFO`,
+  `MPTCP_INFO`, etc.
 
 {: .note}
 Note that technically, each subflow (path) is a TCP connection. To see subflows,
@@ -51,8 +52,8 @@ nstat -asz | grep MPTcpExt
 For more details about these counters, see:
 [https://mptcp-apps.github.io/mptcp-doc/mptcp-linux.html#analyzing-the-output-of-nstat](MPTCP Doc).
 
-When encountering an issue with MPTCP, it is often interesting to run `nstat -n` before, and
-`nstat | grep Tcp` after the issue.
+When encountering an issue with MPTCP, it is often interesting to run `nstat -n`
+before, and `nstat | grep Tcp` after the issue.
 
 
 ## TCPDump and WireShark

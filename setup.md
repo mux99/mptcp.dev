@@ -10,12 +10,14 @@ This setup page is specific to the Multipath TCP support in the Linux kernel.
 
 ## Kernel version
 
-MPTCP support debuted with version 5.6 of the Linux kernel. It has continued to evolve, and is
-still evolving today. See the [ChangeLog](https://github.com/multipath-tcp/mptcp_net-next/wiki/#changelog)
-for more details.
+MPTCP support debuted with version 5.6 of the Linux kernel. It has continued to
+evolve, and is still evolving today. See the
+[ChangeLog](https://github.com/multipath-tcp/mptcp_net-next/wiki/#changelog) for
+more details.
 
-For this reason, we do recommend you to use a [recent kernel](https://www.kernel.org/),
-ideally the last stable version, or the last "long term support" (LTS) one.
+For this reason, we do recommend you to use a
+[recent kernel](https://www.kernel.org/), ideally the last stable version, or
+the last "long term support" (LTS) one.
 
 Note that the RedHat/CentOS kernels have a good support for MPTCP, where new
 features and bug fixes are regularly backported.
@@ -31,19 +33,19 @@ likely MPTCP is already enabled, and you can skip this section.
 
 The Linux kernel being used has to be compiled with `CONFIG_MPTCP=y` and
 `CONFIG_MPTCP_IPV6=y` options, and ideally `CONFIG_INET_MPTCP_DIAG=y/m`. If not,
-please report this to your GNU/Linux distribution: MPTCP in the kernel doesn't add much overhead,
-and is enabled in most main Linux distributions (Debian, Ubuntu, RedHat, Fedora,
-etc.), and other specific ones like Raspbian.
+please report this to your GNU/Linux distribution: MPTCP in the kernel doesn't
+add much overhead, and is enabled in most main Linux distributions (Debian,
+Ubuntu, RedHat, Fedora, etc.), and other specific ones like Raspbian.
 
 {: .note}
-Note that `CONFIG_MPTCP_IPV6=y` requires `IPV6` to be inlined (`=y`), and not built as
-a module (`=m`). Having `IPV6` inlined is recommended by NetDev maintainers
-anyway: today, it is very likely that IPv6 will be used, e.g. for the loopback
-address.
+Note that `CONFIG_MPTCP_IPV6=y` requires `IPV6` to be inlined (`=y`), and not
+built as a module (`=m`). Having `IPV6` inlined is recommended by NetDev
+maintainers anyway: today, it is very likely that IPv6 will be used, e.g. for
+the loopback address.
 
 ### Enable the creation of MPTCP sockets
 
-If available, MPTCP should be enabled by default. If not, change this sysctl
+If available, MPTCP should be enabled by default. If not, change this `sysctl`
 knob:
 
 ```bash
@@ -106,15 +108,15 @@ To be able to use multiple IP addresses on a host to create multiple *subflows*
 > A server having only one network interface does not need to configure anything
 > else: the client will create additional subflows as needed.
 >
-> It might be interesting to announce additional IPv4/6 addresses. Some
-> clients might be connected to networks having only an IPv4 or an IPv6
-> address. Also consider that IPv4 and IPv6 packets are often routed differently through some
+> It might be interesting to announce additional IPv4/6 addresses. Some clients
+> might be connected to networks having only an IPv4 or an IPv6 address. Also
+> consider that IPv4 and IPv6 packets are often routed differently through some
 > networks, resulting in different latencies.
 
 ### Path-Manager configuration
 
-With the default in-kernel MPTCP path-manager, additional IP addresses need
-to be specified.
+With the default in-kernel MPTCP path-manager, additional IP addresses need to
+be specified.
 
 This configuration can be automated with tools like
 [Network Manager](https://networkmanager.dev) -- in command lines, look for
@@ -165,7 +167,8 @@ ip mptcp limits set [ subflows NR ] [ add_addr_accepted NR ]
 
 `subflows` is the limit of created and accepted subflows (paths), and
 `add_addr_accepted` is the limit of accepted `ADD_ADDR` -- IP address
-notification from the other peer -- that will result in the creation of subflows.
+notification from the other peer -- that will result in the creation of
+subflows.
 
 #### Example
 

@@ -8,8 +8,8 @@ titles_max_depth: 2
 
 The MPTCP protocol is described in [RFC 8684](https://datatracker.ietf.org/doc/html/rfc8684),
 and also in the [MPTCP Doc](https://mptcp-apps.github.io/mptcp-doc/mptcp.html),
-but neither of those describe the internals of the MPTCP implementation in the Linux
-kernel.
+but neither of those describe the internals of the MPTCP implementation in the
+Linux kernel.
 
 A new socket type has been added for MPTCP for the userspace-facing socket.
 The kernel is in charge of creating subflow sockets: they are TCP sockets

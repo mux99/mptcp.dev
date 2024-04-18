@@ -19,8 +19,8 @@ website for those who want to contribute.
 - `details` contains detailed explanations of the kernel implementation.
 
 ## Front matter
-At the top of all pages a section between two `---` lines contains information on the
-page.
+At the top of all pages a section between two `---` lines contains information
+on the page.
 
 All `jekyll` and `just the docs` features are supported, and new ones have been
 added:

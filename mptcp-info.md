@@ -33,10 +33,10 @@ and update the size with the number of bytes that were written:
 </div>
 
 {: .warning}
-It is important to note that this `mptcp_info` structure adds fields in newer kernel
-versions, and might continue to grow. It means that the userspace application
-and the kernel need to work with different versions of this structure. The
-kernel will share the number of bytes written using the
+It is important to note that this `mptcp_info` structure adds fields in newer
+kernel versions, and might continue to grow. It means that the userspace
+application and the kernel need to work with different versions of this
+structure. The kernel will share the number of bytes written using the
 `optlen`{: .color-orange} variable, so the userspace application can detect what
 the current kernel has exposed.
 
@@ -94,7 +94,7 @@ struct mptcp_info {
 };
 ```
 
-Check [include/uapi/linux/mptcp.h](https://github.com/multipath-tcp/mptcp_net-next/blob/export/include/uapi/linux/mptcp.h)
+Check [`include/uapi/linux/mptcp.h`](https://github.com/multipath-tcp/mptcp_net-next/blob/export/include/uapi/linux/mptcp.h)
 to get the latest version.
 </details> {: .ctsm}
 
@@ -211,7 +211,7 @@ struct mptcp_subflow_info {
 ```
 </details> {: .ctsm}
 
-Check [include/uapi/linux/mptcp.h](https://github.com/multipath-tcp/mptcp_net-next/blob/export/include/uapi/linux/mptcp.h)
+Check [`include/uapi/linux/mptcp.h`](https://github.com/multipath-tcp/mptcp_net-next/blob/export/include/uapi/linux/mptcp.h)
 file to get the latest version.
 </details> {: .ctsm}
 
