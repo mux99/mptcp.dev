@@ -50,7 +50,7 @@ nstat -asz | grep MPTcpExt
 ```
 
 For more details about these counters, see:
-[https://mptcp-apps.github.io/mptcp-doc/mptcp-linux.html#analyzing-the-output-of-nstat](MPTCP Doc).
+[MPTCP Doc](https://mptcp-apps.github.io/mptcp-doc/mptcp-linux.html#analyzing-the-output-of-nstat).
 
 When encountering an issue with MPTCP, it is often interesting to run `nstat -n`
 before, and `nstat | grep Tcp` after the issue.
