@@ -8,12 +8,12 @@ titles_max_depth: 2
 
 Multipath TCP or [MPTCP](https://en.wikipedia.org/wiki/Multipath_TCP) is an
 extension to the standard [TCP](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)
-described in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows
+and is described in [RFC 8684](https://www.rfc-editor.org/rfc/rfc8684.html). It allows
 a device to make use of multiple interfaces at once to send and receive TCP
 packets over a single MPTCP connection. MPTCP can aggregate the bandwidth of
 multiple interfaces or prefer the one with lowest latency, it also allows a
-fail-over if one path is down, and the traffic is seamlessly reinjected to
-another one.
+fail-over if one path is down, and the traffic is seamlessly reinjected on
+other paths.
 
 ```mermaid
 graph TD;
@@ -43,19 +43,19 @@ graph TD;
 
 Technically, when a new socket is created with the `IPPROTO_MPTCP` protocol
 (Linux-specific), a *subflow* (or *path*) is created. This *subflow* consists of
-a regular TCP connection that is used to transmit data trough one interface.
-Additional *subflows* can be negotiated later between the hosts. For the distant
+a regular TCP connection that is used to transmit data through one interface.
+Additional *subflows* can be negotiated later between the hosts. For the remote
 host to be able to detect the use of MPTCP, a new field is added to the TCP
 *option* field of the underlying TCP *subflow*. This field contains, amongst
-other things, `MP_CAPABLE` that tells the other host to use MPTCP if it is
-supported. If the distant host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox)
+other things, a `MP_CAPABLE` option that tells the other host to use MPTCP if it is
+supported. If the remote host or any [middlebox](https://en.wikipedia.org/wiki/Middlebox)
 in between does not support it, the returned `SYN+ACK` packet will not contain
-the MPTCP options in the TCP *option* field. In that case, the connection will
+MPTCP options in the TCP *option* field. In that case, the connection will
 be "downgraded" to plain TCP, and it will continue with a single path.
 
 This behavior is made possible by two internal components:
-* **Path Manager**: it is managing *subflows*, from creation to deletion, but
-  also the addresses announcements. Typically, it is the client side that
+* **Path Manager**: Manages *subflows* from creation to deletion, and
+  also address announcements. Typically, it is the client side that
   initiates subflows, and the server side that announces additional addresses
   via the `ADD_ADDR` and `REMOVE_ADDR` options.
 
@@ -74,16 +74,16 @@ This behavior is made possible by two internal components:
   ```
 
 {: .note}
-As of Linux v6.10, there are two path managers, controlled by the `net.mptcp.pm_type`
+As of Linux v5.19, there are two path managers, controlled by the `net.mptcp.pm_type`
 sysctl knob: the in-kernel one (type `0`) where the same rules are applied for
 all the connections (see: `ip mptcp`) ; and the userspace one (type `1`),
 controlled by a userspace daemon (i.e. [`mptcpd`](https://mptcpd.mptcp.dev/))
-where different rules can be applied by connections.
+where different rules can be applied for each connection.
 
-* **Packet Scheduler**: it is in charge of selecting which available
-  *subflow(s)* to use to send the next data packets. It can decide to use
+* **Packet Scheduler**: In charge of selecting which available
+  *subflow(s)* to use to send the next data packet. It can decide to
   maximize the use of the available bandwidth, only to pick the path with the
-  lower latency or any other policy depending on the configuration.
+  lower latency, or any other policy depending on the configuration.
 
   ```mermaid
   graph LR;
@@ -101,7 +101,7 @@ where different rules can be applied by connections.
   ```
 
 {: .note}
-As of Linux v6.10, there is only one packet scheduler, controlled by some sysctl
+As of Linux v6.8, there is only one packet scheduler, controlled by sysctl
 knobs in `net.mptcp`.
 
 ## Features
@@ -129,7 +129,7 @@ for more details.
 
 * Maintained by MPTCP community members
   * [Kernel development on GitHub](https://github.com/multipath-tcp/mptcp_net-next/)
-  * [Multipath TCP Daemon](https://github.com/intel/mptcpd)
+  * [Multipath TCP Daemon](https://github.com/multipath-tcp/mptcpd)
     * The [`mptcpd`](https://www.mankier.com/8/mptcpd) daemon can do full
       userspace path management or control the in-kernel path manager.
     * Includes the [`mptcpize`](https://www.mankier.com/8/mptcpize) utility to

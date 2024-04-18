@@ -5,7 +5,7 @@ website for those who want to contribute.
 
 ## The pages
 - `index`, the landing page should contain basic context of this website and
-  explanations on what is MPTCP. Also a section dedicated to links to other
+  explanations on what MPTCP is. Also a section dedicated to links to other
   MPTCP related content.
 - `setup` is meant as a guide for end users, helping them setup and use MPTCP on
   their system.
@@ -14,12 +14,12 @@ website for those who want to contribute.
 - `implementation` contains information on how to support MPTCP natively in an
   app on Linux.
 - `mptcp-info` contains info on how app devs can retrieve MPTCP info.
-- `faq`, a FAQ.
+- `faq`, for Frequently Asked Questions.
 - `apps`, the list of currently apps supporting MPTCP natively.
 - `details` contains detailed explanations of the kernel implementation.
 
 ## Front matter
-At the top of all pages a section between `---`, contains information on the
+At the top of all pages a section between two `---` lines contains information on the
 page.
 
 All `jekyll` and `just the docs` features are supported, and new ones have been
@@ -41,4 +41,4 @@ added:
 
 ## Contributions
 This website is open to contributions via pull request. A link at the bottom
-left of pages point to the edition page on GitHub.
+left of each page allows anyone to edit it on GitHub.

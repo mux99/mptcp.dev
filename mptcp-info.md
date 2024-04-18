@@ -6,7 +6,7 @@ nav_titles: true
 titles_max_depth: 2
 ---
 
-This section is for **application developers** willing to retrieve MPTCP
+This section is for **application developers** trying to access MPTCP
 specific info from their app on Linux. End-users can retrieve info via other
 interfaces, see the [Debugging](debugging.html) section.
 
@@ -24,8 +24,7 @@ with `ss -Mi` for example.
 
 To retrieve info, `getsockopt(MPTCP_INFO)` can be used: the kernel will fill a
 given buffer of a given size with items following the `mptcp_info` structure,
-and update the variable with the given size with the number of bytes that have
-been written:
+and update the size with the number of bytes that were written:
 
 <div class="language-c highlighter-rouge">
   <div class="highlight">
@@ -34,15 +33,15 @@ been written:
 </div>
 
 {: .warning}
-It is important to note that this `mptcp_info` structure got new items amongst
+It is important to note that this `mptcp_info` structure adds fields in newer kernel
 versions, and might continue to grow. It means that the userspace application
-and the kernel might work with different versions of this structure. The
-kernel will write the amount of bytes that have been written in the
+and the kernel need to work with different versions of this structure. The
+kernel will share the number of bytes written using the
 `optlen`{: .color-orange} variable, so the userspace application can detect what
 the current kernel has exposed.
 
-The kernel might write fewer data than what the userspace application expects.
-If the userspace application asks for fewer data than what the kernel can
+The kernel might write less data than what the userspace application expects.
+If the userspace application asks for less data than what the kernel can
 provide, the kernel will stop at the given size. To check the presence of an
 option, there are two simple ways:
 
@@ -96,7 +95,7 @@ struct mptcp_info {
 ```
 
 Check [include/uapi/linux/mptcp.h](https://github.com/multipath-tcp/mptcp_net-next/blob/export/include/uapi/linux/mptcp.h)
-file to get the latest version.
+to get the latest version.
 </details> {: .ctsm}
 
 <details markdown="block">
@@ -122,22 +121,22 @@ else
 For more detailed examples, feel free to look at the
 [MPTCP selftests](https://github.com/multipath-tcp/mptcp_net-next/blob/export/tools/testing/selftests/net/mptcp/mptcp_sockopt.c).
 
-## Subflows level
+## Per-subflow Information
 
 Since v5.16, it is possible to get the `TCP_INFO` structure and used IP
 addresses for each subflow, thanks to `MPTCP_TCPINFO` and `MPTCP_SUBFLOW_ADDRS`.
 However, retrieving everything means doing two `getsockopt()` calls: subflows
-can be removed or added in-between, making the tracking difficult. To cope with
+can be removed or added in-between system calls, making tracking difficult. To cope with
 that `MPTCP_FULL_INFO` has been added in v6.5.
 
-So here are the supported options
-- `MPTCP_TCPINFO`: it uses `struct mptcp_subflow_data`, followed by an array of
+Here are the supported options:
+- `MPTCP_TCPINFO`: Uses `struct mptcp_subflow_data`, followed by an array of
   `struct tcp_info`.
-- `MPTCP_SUBFLOW_ADDRS`: it uses `struct mptcp_subflow_data`, followed by an
+- `MPTCP_SUBFLOW_ADDRS`: Uses `struct mptcp_subflow_data`, followed by an
   array of `mptcp_subflow_addrs`.
-- `MPTCP_FULL_INFO`: it uses `struct mptcp_full_info`, with one pointer to an
+- `MPTCP_FULL_INFO`: Uses `struct mptcp_full_info`, with one pointer to an
   array of `struct mptcp_subflow_info` (including the `struct mptcp_subflow_addrs`),
-  one pointer to an array of `struct tcp_info`, followed by the content of
+  and one pointer to an array of `struct tcp_info`, followed by the content of
   `struct mptcp_info`.
 
 <details markdown="block">
@@ -264,26 +263,26 @@ differences:
 | `mptcp_subflow_data` | `num_subflows` | The **total** number of subflows |
 | `mptcp_full_info` | `num_subflows` | The **total** number of subflows |
 
-`mptcpi_subflows` shows the number of **additional** subflows, then not taking
+`mptcpi_subflows` shows the number of **additional** subflows, not taking
 into account the initial one. `mptcpi_subflows_total` and `num_subflows` do
 include the initial one if it is still attached to the MPTCP connection. It is
-then recommended to use these last two.
+therefore recommended to use these last two fields.
 
 ## Check for TCP fallback
 
-Since kernel v5.16, the `getsockopt(MPTCP_INFO)` can be used to check if an
+Since kernel v5.16, `getsockopt(MPTCP_INFO)` can be used to check if an
 MPTCP connection fell back to TCP. If this `getsockopt()` call returns `-1`,
 and `errno` is set to `EOPNOTSUPP` (v4) or `ENOPROTOOPT` (v6), it means the
-MPTCP connection has fallen back to TCP at some points. In case of a client
+MPTCP connection has fallen back to TCP at some point. In case of a client
 (`connect()`), or for a server to check if an established connection has later
-fell back to TCP (should be rare), it is also required to check if the
+fallen back to TCP (should be rare), it is also required to check if the
 `mptcpi_flags` field from the `mptcp_info` structure has the
 `MPTCP_INFO_FLAG_FALLBACK` bit (`0x1`) set.
 
 {: .warning}
 On kernels < v5.16, `getsockopt(MPTCP_INFO)` will always fail, and `errno` will
 also be set to `EOPNOTSUPP` (v4) or `ENOPROTOOPT` (v6). Do not use this method
-on older kernels then!
+on older kernels.
 
 On the server side, it is possible to look at the protocol of the `accept`ed
 sockets with `getsockopt(SO_PROTOCOL)`: if the client requested to use MPTCP,
@@ -338,7 +337,7 @@ bool client_requested_mptcp(int accept_fd)
 <summary>Example in C (<b>server only</b>: full solution) </summary>
 
 {: .warning}
-**Server only**: It requires **kernel >= 5.16**, it also checks for fallback
+**Server only**: Requires **kernel >= 5.16**, it also checks for fallback
 that would have happened after the establishment of the connection (should be
 rare)
 
@@ -367,7 +366,7 @@ bool socket_is_mptcp(int accept_fd)
 
 <details markdown="block">
 <summary>Example in Go </summary>
-Simply call [`MultipathTCP()`](https://pkg.go.dev/net#TCPConn.MultipathTCP) on
+Call [`MultipathTCP()`](https://pkg.go.dev/net#TCPConn.MultipathTCP) on
 the `TCPConn`.
 ```go
 d := &Dialer{}

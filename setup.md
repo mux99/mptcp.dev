@@ -10,14 +10,14 @@ This setup page is specific to the Multipath TCP support in the Linux kernel.
 
 ## Kernel version
 
-MPTCP support has debuted with the version 5.6. It has continued to evolve, and
+MPTCP support debuted with version 5.6 of the Linux kernel. It has continued to evolve, and is
 still evolving today. See the [ChangeLog](https://github.com/multipath-tcp/mptcp_net-next/wiki/#changelog)
 for more details.
 
 For this reason, we do recommend you to use a [recent kernel](https://www.kernel.org/),
 ideally the last stable version, or the last "long term support" (LTS) one.
 
-Note that the RedHat/CentOS kernels have a good support of MPTCP, where new
+Note that the RedHat/CentOS kernels have a good support for MPTCP, where new
 features and bug fixes are regularly backported.
 
 
@@ -31,13 +31,13 @@ likely MPTCP is already enabled, and you can skip this section.
 
 The Linux kernel being used has to be compiled with `CONFIG_MPTCP=y` and
 `CONFIG_MPTCP_IPV6=y` options, and ideally `CONFIG_INET_MPTCP_DIAG=y/m`. If not,
-please report this to your GNU/Linux distribution: MPTCP in the kernel is light,
-and enabled in most main Linux distributions (Debian, Ubuntu, RedHat, Fedora,
+please report this to your GNU/Linux distribution: MPTCP in the kernel doesn't add much overhead,
+and is enabled in most main Linux distributions (Debian, Ubuntu, RedHat, Fedora,
 etc.), and other specific ones like Raspbian.
 
 {: .note}
-Note that `CONFIG_MPTCP_IPV6=y` requires `IPV6` to be inlined (`=y`), and not as
-a module (`=m`), but having `IPV6` inlined is recommended by NetDev maintainers
+Note that `CONFIG_MPTCP_IPV6=y` requires `IPV6` to be inlined (`=y`), and not built as
+a module (`=m`). Having `IPV6` inlined is recommended by NetDev maintainers
 anyway: today, it is very likely that IPv6 will be used, e.g. for the loopback
 address.
 
@@ -100,27 +100,27 @@ GODEBUG=multipathtcp=1 <command>
 ## Using multiple IP addresses
 
 To be able to use multiple IP addresses on a host to create multiple *subflows*
-(paths), the MPTCP path-manager needs to know what IP addresses can be used.
+(paths), the MPTCP path-manager needs to know which IP addresses can be used.
 
 {: .info}
 > A server having only one network interface does not need to configure anything
-> else: the client will create additional subflows it wants to.
+> else: the client will create additional subflows as needed.
 >
-> Yet, it might be interesting to announce the additional IPv4/6 addresses: some
-> clients might be connected to some networks having only an IPv4 or an IPv6
-> address; plus IPv4 and IPv6 packets are often routed differently through some
+> It might be interesting to announce additional IPv4/6 addresses. Some
+> clients might be connected to networks having only an IPv4 or an IPv6
+> address. Also consider that IPv4 and IPv6 packets are often routed differently through some
 > networks, resulting in different latencies.
 
 ### Path-Manager configuration
 
-With the default in-kernel MPTCP path-manager, the additional IP addresses need
+With the default in-kernel MPTCP path-manager, additional IP addresses need
 to be specified.
 
 This configuration can be automated with tools like
 [Network Manager](https://networkmanager.dev) -- in command lines, look for
 `mptcp-flags` in the [settings](https://networkmanager.dev/docs/api/latest/nm-settings-nmcli.html) --
-and [mptcpd](https://mptcpd.mptcp.dev), but here, the focus is done on the manual
-configuration, using [`ip mptcp`](https://man7.org/linux/man-pages/man8/ip-mptcp.8.html)
+and [mptcpd](https://mptcpd.mptcp.dev). Here, the focus is on manual
+configuration, using the [`ip mptcp`](https://man7.org/linux/man-pages/man8/ip-mptcp.8.html)
 command.
 
 {: .note}
@@ -143,12 +143,12 @@ will require manual configuration, see below:
 
 One of the following flags needs to be set:
 - `signal`: The endpoint will be announced to each peer via an MPTCP `ADD_ADDR`
-  sub-option. Typically, what a server would do.
+  sub-option. Typically, a server would be responsible for this.
 - `subflow`: The endpoint will be used to create an additional subflow using
-  the given source IP address. Typically, what a client would do.
+  the given source IP address. A client would typically do this.
 
 Optionally, the following flags can be set:
-- `backup`: Subflows created from this endpoint instructs the peers to only send
+- `backup`: Subflows created from this endpoint instruct the peers to only send
   data on it when all non-backup subflows are unavailable.
 - `fullmesh`: The MPTCP path manager will try to create an additional subflow
   for each known peer address, using this endpoint as the source IP address.

@@ -6,14 +6,14 @@ nav_titles: true
 titles_max_depth: 2
 ---
 
-This guide is for **application developers** willing to add native MPTCP support
+This guide is for **application developers** working to add native MPTCP support
 when running on Linux. End-users can also [force some apps to use
-MPTCP](setup.html#force-applications-to-use-mptcp), but that's more a
+MPTCP](setup.html#force-applications-to-use-mptcp), but that's more of a
 workaround, because the app will not notice a different socket type is being
 used.
 
 ## MPTCP socket
-On Linux, MPTCP can be used simply by selecting MPTCP instead of TCP when
+On Linux, MPTCP can be used by selecting MPTCP instead of TCP when
 creating the `socket`:
 
 <div class="language-c highlighter-rouge">
@@ -26,7 +26,7 @@ That's it!
 
 {: .note}
 Note that `IPPROTO_MPTCP`{: .color-green} is defined as `262`{: .text-yellow-300}.
-It can be manually defined if it is not already the case.
+It can be manually defined if it is not already handled in your system headers.
 
 If MPTCP is not supported, `errno`{: .text-red-200} will be set to:
 - `EINVAL`{: .text-red-200}: (*Invalid argument*): MPTCP is not available, on

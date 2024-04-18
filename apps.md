@@ -7,8 +7,7 @@ titles_max_depth: 2
 ---
 
 Applications listed bellow support MPTCP natively. Please note that other apps
-can be forced to use it by following instructions from
-[here](setup.html#force-applications-to-use-mptcp).
+can be forced to use it by following [these instructions](setup.html#force-applications-to-use-mptcp).
 
 ## Linux apps
 
@@ -46,4 +45,4 @@ free to look at this [spreadsheet](https://docs.google.com/spreadsheets/d/1F2-v4
 
 Please open a new [pull request](https://github.com/multipath-tcp/mptcp.dev/pulls)
 or an [issue](https://github.com/multipath-tcp/mptcp.dev/issues) if you know any
-other apps with and important community of user, and supporting MPTCP natively.
+other apps with a community of users and supporting MPTCP natively.
